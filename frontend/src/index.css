@@ -1,0 +1,10 @@
+
+/* Hold the actual CSS rules that the browser reads*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #79BAEC;
+}
