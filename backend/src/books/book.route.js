@@ -1,13 +1,20 @@
-const express = require ('express')
-const router = express. Router();
+const express = require('express');
+const router = express.Router();
+const { postABook, getAllBooks, getSingleBook, UpdateBook, deleteABook } = require('./book.controller');
 
-//Post a book: submit something frontend to db
-//Get: get something back from db
-//Put: edit or update something
-//delete
+// Post a book: submit something from frontend to db
+router.post('/create-book', postABook);
 
-router.post ('/create-book',async(req,res) => {
+// get all books
+router.get('/', getAllBooks);
 
-})
+// get a single book
+router.get('/:id', getSingleBook);
+
+// update a book
+router.put('/edit/:id', UpdateBook);
+
+// delete a book
+router.delete('/:id', deleteABook);
 
 module.exports = router;
