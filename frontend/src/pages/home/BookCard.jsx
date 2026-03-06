@@ -14,7 +14,7 @@ const BookCard = ({ book }) => {
             <div className="w-32 h-44 sm:h-60 sm:w-44 flex-shrink-0 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center">
                 <Link to={`/books/${book._id}`}>
                     <img
-                        src={`${getImgUrl(image)}`}
+                        src={getImgUrl(image)}
                         alt={book?.title}
                         className="w-full h-full object-cover transition-transform hover:scale-105 duration-200"
                     />

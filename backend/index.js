@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const port = process.env.PORT || 5000
 const cors = require('cors');
 const path = require('path');
+const uploadRouter = require('./upload');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 //Middleware
@@ -16,12 +17,13 @@ app.use(cors({
 // Route
 const bookRoutes = require('./src/books/book.route')
 app.use("/api/books", bookRoutes)
+app.use("/api", uploadRouter)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 async function main() {
     await mongoose.connect(process.env.DB_URL);
-    app.use("/", (req, res) => {
-        res.send("Bookstore Sever is running!")
-
+    app.get("/", (req, res) => {
+        res.send("Bookstore Server is running!")
     });
 }
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from "react-hook-form"
 import { useAddBookMutation } from '../../redux/features/books/booksApi'
 import { useNavigate } from 'react-router-dom'
@@ -7,13 +7,39 @@ const AddBook = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm()
     const [addBook, { isLoading }] = useAddBookMutation()
     const navigate = useNavigate()
+    const [thumbnailPreview, setThumbnailPreview] = useState(null)
+    const [uploadedImagePath, setUploadedImagePath] = useState(null)
+
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0]
+        if (!file) return
+
+        const formData = new FormData()
+        formData.append('coverImage', file)
+
+        try {
+            const response = await fetch('http://localhost:5000/api/upload', {
+                method: 'POST',
+                body: formData,
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to upload image')
+            }
+
+            const data = await response.json()
+            setUploadedImagePath(data.filePath) // Save the uploaded image path
+            setThumbnailPreview(`http://localhost:5000${data.filePath}`) // Set preview URL
+        } catch (error) {
+            alert('Image upload failed: ' + error.message)
+        }
+    }
 
     const onSubmit = async (data) => {
         try {
-            // Add a placeholder for thumbnail if not provided, or handle as needed
             const bookData = {
                 ...data,
-                thumbnail: data.thumbnail || "https://via.placeholder.com/150",
+                thumbnail: uploadedImagePath || "https://via.placeholder.com/150",
                 published_year: parseInt(data.published_year),
                 num_pages: parseInt(data.num_pages),
                 price: parseFloat(data.price),
@@ -22,6 +48,8 @@ const AddBook = () => {
             await addBook(bookData).unwrap()
             alert("Book added successfully!")
             reset()
+            setThumbnailPreview(null)
+            setUploadedImagePath(null)
             navigate('/')
         } catch (err) {
             alert("Failed to add book: " + (err.data?.message || err.message))
@@ -84,8 +112,10 @@ const AddBook = () => {
                         <label className="block text-sm font-medium text-gray-700">Thumbnail URL</label>
                         <input
                             {...register('thumbnail')}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100 text-gray-500 cursor-not-allowed"
                             placeholder="Image URL"
+                            disabled
+                            value={uploadedImagePath || ""}
                         />
                     </div>
                 </div>
@@ -117,6 +147,23 @@ const AddBook = () => {
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                         placeholder="Brief summary of the book"
                     />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Upload Cover Image</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    />
+                    {thumbnailPreview && (
+                        <img
+                            src={thumbnailPreview}
+                            alt="Thumbnail Preview"
+                            className="mt-2 w-32 h-32 object-cover"
+                        />
+                    )}
                 </div>
 
                 <div className="flex gap-4">
