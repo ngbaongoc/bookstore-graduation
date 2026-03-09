@@ -73,10 +73,41 @@ const deleteABook = async (req, res) => {
     }
 };
 
+const addReview = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { review, score } = req.body;
+
+        const book = await Book.findById(id);
+        if (!book) {
+            return res.status(404).send({ message: "Book not Found!" });
+        }
+
+        // Update reviews and stats
+        book.review_text.push(review);
+
+        // Calculate new average score
+        const totalScore = (book.average_review_score * book.number_of_review) + Number(score);
+        book.number_of_review += 1;
+        book.average_review_score = totalScore / book.number_of_review;
+
+        await book.save();
+
+        res.status(200).send({
+            message: "Review added successfully",
+            book: book
+        });
+    } catch (error) {
+        console.error("Error adding review", error);
+        res.status(500).send({ message: "Failed to add review" });
+    }
+}
+
 module.exports = {
     postABook,
     getAllBooks,
     getSingleBook,
     UpdateBook,
-    deleteABook
+    deleteABook,
+    addReview
 }

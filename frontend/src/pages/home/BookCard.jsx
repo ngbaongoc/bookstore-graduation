@@ -2,8 +2,22 @@ import React from 'react'
 import { FiShoppingCart } from "react-icons/fi"
 import { getImgUrl } from '../../utils/getImgUrl'
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { addToCart } from '../../redux/features/cart/cartSlice'
+import { addToWishlist } from '../../redux/features/wishlist/wishlistSlice'
+import { FaRegHeart } from "react-icons/fa";
 
 const BookCard = ({ book }) => {
+    const dispatch = useDispatch();
+
+    const handleAddToCart = (product) => {
+        dispatch(addToCart(product));
+    }
+
+    const handleAddToWishlist = (product) => {
+        dispatch(addToWishlist(product));
+    }
+
     // Handle both mockup data (newPrice, oldPrice, coverImage) and real data (price, thumbnail)
     const price = book?.newPrice || book?.price;
     const oldPrice = book?.oldPrice;
@@ -41,9 +55,17 @@ const BookCard = ({ book }) => {
                         </span>}
                     </p>
                     <button
+                        onClick={() => handleAddToCart(book)}
                         className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md flex items-center gap-2 transition-colors">
                         <FiShoppingCart />
                         <span>Add to Cart</span>
+                    </button>
+                    <button
+                        onClick={() => handleAddToWishlist(book)}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2 rounded-md transition-colors"
+                        title="Add to wishlist"
+                    >
+                        <FaRegHeart className="w-5 h-5" />
                     </button>
                 </div>
             </div>

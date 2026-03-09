@@ -16,9 +16,14 @@ app.use(cors({
 
 // Route
 const bookRoutes = require('./src/books/book.route')
+const orderRoutes = require('./src/orders/order.route')
+const initAbandonedCartCron = require('./src/orders/orderCron')
 app.use("/api/books", bookRoutes)
 app.use("/api", uploadRouter)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/api/orders", orderRoutes)
+
+initAbandonedCartCron();
 
 async function main() {
     await mongoose.connect(process.env.DB_URL);

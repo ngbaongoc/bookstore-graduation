@@ -35,6 +35,14 @@ const booksApi = createApi({
                 body: newBook
             }),
             invalidatesTags: ['Books']
+        }),
+        addReview: builder.mutation({
+            query: ({ id, review, score }) => ({
+                url: `/${id}/reviews`,
+                method: 'POST',
+                body: { review, score }
+            }),
+            invalidatesTags: (result, error, { id }) => [{ type: 'Books', id }]
         })
     }),
 })
@@ -44,6 +52,7 @@ export const {
     useFetchBookByIdQuery,
     useUpdateBookMutation,
     useDeleteBookMutation,
-    useAddBookMutation
+    useAddBookMutation,
+    useAddReviewMutation
 } = booksApi
 export default booksApi
