@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDeleteUserMutation, useFetchAllUsersQuery, useSendVouchersMutation } from '../../redux/features/users/usersApi';
 import Swal from 'sweetalert2';
 
@@ -182,7 +182,11 @@ const ManageUsers = () => {
                         {filteredUsers.map((user) => (
                             <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4 font-mono text-xs text-blue-600">{user.userId}</td>
-                                <td className="px-6 py-4 font-medium text-gray-900">{user.username}</td>
+                                <td className="px-6 py-4 font-medium text-gray-900">
+                                    <Link to={`/admin/users/${user.userId}/orders`} className="hover:text-blue-600 hover:underline transition-colors cursor-pointer" title="View Delivered Orders">
+                                        {user.username}
+                                    </Link>
+                                </td>
                                 <td className="px-6 py-4 text-gray-600">{user.email}</td>
                                 <td className="px-6 py-4 text-gray-600">{user.phone}</td>
                                 <td className="px-6 py-4 font-mono text-sm text-gray-700">

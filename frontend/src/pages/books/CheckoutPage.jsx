@@ -56,7 +56,7 @@ const CheckoutPage = () => {
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
-            address: {
+            shippingAddress: {
                 street: formData.street,
                 city: formData.city,
                 country: formData.country,

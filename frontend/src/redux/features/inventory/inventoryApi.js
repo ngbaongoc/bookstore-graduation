@@ -20,6 +20,10 @@ export const inventoryApi = createApi({
             query: () => '/logs',
             providesTags: ['InventoryLogs']
         }),
+        getInventoryAlerts: builder.query({
+            query: () => '/alerts',
+            providesTags: ['InventoryLogs', 'Books']
+        }),
         adjustStock: builder.mutation({
             query: ({ id, quantityToAdd }) => ({
                 url: `/adjust/${id}`,
@@ -48,6 +52,7 @@ export const inventoryApi = createApi({
 
 export const {
     useGetInventoryLogsQuery,
+    useGetInventoryAlertsQuery,
     useAdjustStockMutation,
     useConfirm3PLPickupMutation,
     usePackOrderMutation

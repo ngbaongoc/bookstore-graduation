@@ -3,15 +3,11 @@ const router = express.Router();
 const verifyAdminToken = require('../middleware/verifyAdminToken');
 const {
   adjustStock,
-  confirm3PLPickup,
-  packOrder,
-  getLogs
+  getAlerts
 } = require('./inventory.controller');
 
 // Inventory routes for E-Logistics dashboard
 router.put('/adjust/:id', verifyAdminToken, adjustStock);
-router.post('/handover/:id', verifyAdminToken, confirm3PLPickup);
-router.post('/pack/:id', verifyAdminToken, packOrder);
-router.get('/logs', verifyAdminToken, getLogs);
+router.get('/alerts', verifyAdminToken, getAlerts);
 
 module.exports = router;

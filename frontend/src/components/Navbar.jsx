@@ -4,20 +4,24 @@ import { Link } from 'react-router-dom';
 import { FaBars } from "react-icons/fa";
 import { TfiSearch } from "react-icons/tfi";
 import { FaRegHeart } from "react-icons/fa6";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaBell } from "react-icons/fa";
 import { GiShoppingCart } from "react-icons/gi";
 
-
 import { useAuth } from '../context/AuthContext';
+import { useGetInventoryAlertsQuery } from '../redux/features/inventory/inventoryApi';
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false)
   const cartItems = useSelector(state => state.cart.cartItems);
   const wishlistItems = useSelector(state => state.wishlist.wishlistItems);
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
   const { currentUser, logoutUser, isAdmin } = useAuth()
+
+  const { data: alerts } = useGetInventoryAlertsQuery(undefined, { skip: !isAdmin, pollingInterval: 60000 });
+  const totalAlerts = (alerts?.lowStockBooksCount || 0) + (alerts?.newOrdersCount || 0);
 
   const navigation = [
     ...(isAdmin ? [{ name: "Dashboard", href: "/admin" }] : []),
@@ -59,6 +63,46 @@ const Navbar = () => {
 
       {/* right side */}
       <div className="flex items-center space-x-5 px-10">
+        {/* Notifications (Admin only) */}
+        {isAdmin && (
+          <div className="relative">
+            <button onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} className="relative mt-1">
+              <FaBell className={`w-6 h-6 transition ${totalAlerts > 0 ? 'text-blue-600 animate-pulse' : 'text-gray-500 hover:text-blue-500'}`} />
+              {totalAlerts > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow">
+                  {totalAlerts}
+                </span>
+              )}
+            </button>
+            {isNotificationsOpen && (
+              <div className="absolute right-0 mt-3 w-64 bg-white shadow-xl rounded-lg border border-gray-100 py-3 px-4 z-50">
+                <h3 className="text-sm font-bold text-gray-800 mb-3 border-b pb-2">Admin Alerts</h3>
+                <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                        <div className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${alerts?.newOrdersCount > 0 ? 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]' : 'bg-gray-300'}`}></div>
+                        <div>
+                            <p className="text-sm font-semibold text-gray-800">{alerts?.newOrdersCount || 0} New Orders</p>
+                            <p className="text-[11px] text-gray-500 leading-tight">Placed in the last 24 hours</p>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <div className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${alerts?.lowStockBooksCount > 0 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-gray-300'}`}></div>
+                        <div>
+                            <p className="text-sm font-semibold text-gray-800">{alerts?.lowStockBooksCount || 0} Low Stock Books</p>
+                            <p className="text-[11px] text-gray-500 leading-tight">Items with &lt; 5 units in-house</p>
+                        </div>
+                    </div>
+                </div>
+                {totalAlerts > 0 && (
+                  <Link to="/admin" onClick={() => setIsNotificationsOpen(false)} className="block text-center mt-4 pt-2 text-[12px] text-blue-600 border-t hover:underline font-medium">
+                    Go to E-Logistics Board →
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         <div>
           {
             (currentUser || isAdmin) ? <>

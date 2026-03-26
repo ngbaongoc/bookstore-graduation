@@ -6,11 +6,17 @@ const getRFMAnalysis = async () => {
     // Step 1: MongoDB Aggregation
     const rawData = await Order.aggregate([
         {
+            $match: {
+                status: 'Delivery',
+                'stageDates.Delivery': { $ne: null }
+            }
+        },
+        {
             $group: {
                 _id: "$userId",
                 monetary: { $sum: "$totalPrice" },
                 frequency: { $count: {} },
-                lastOrderDate: { $max: "$createdAt" }
+                lastOrderDate: { $max: "$stageDates.Delivery" }
             }
         },
         {
@@ -71,16 +77,42 @@ const getRFMAnalysis = async () => {
 
 // Mapping common score patterns to Putler segments
 const getPutlerSegment = (R, F, M) => {
+    // 1. Champions: Bought recently, buy often and spend the most
     if (R >= 4 && F >= 4 && M >= 4) return "Champions";
-    if (R >= 2 && F >= 3 && M >= 3) return "Loyal Customers";
-    if (R >= 3 && F <= 3 && M <= 3) return "Potential Loyalist";
-    if (R >= 4 && F === 1) return "New Customers";
-    if (R >= 3 && F === 1) return "Promising";
-    if (R >= 2 && R <= 3 && F >= 2 && F <= 3 && M >= 2 && M <= 3) return "Needs Attention";
-    if (R >= 2 && R <= 3 && F <= 2 && M <= 2) return "About to Sleep";
-    if (R <= 2 && F >= 2 && M >= 2) return "At Risk";
+    
+    // 2. Loyal Customers: Buy on a regular basis. Responsive to promotions.
+    if (R >= 3 && F >= 3 && M >= 3) return "Loyal Customers";
+    
+    // 3. Can't Lose Them: Used to purchase frequently but haven't returned for a long time.
     if (R <= 2 && F >= 4 && M >= 4) return "Can't Lose Them";
-    if (R <= 2 && F <= 2 && M <= 2) return "Hibernating";
+    
+    // 4. At Risk: Purchased often but a long time ago.
+    if (R <= 2 && F >= 3) return "At Risk";
+    
+    // 5. New Customers: Bought most recently, but only once/few times.
+    if (R >= 4 && F <= 1) return "New Customers";
+    
+    // 6. Promising: Bought recently, but haven't spent much.
+    if (R === 3 && F <= 1) return "Promising";
+    
+    // 7. Potential Loyalist: Recent customers, average frequency.
+    if (R >= 3 && F >= 2 && F <= 3) return "Potential Loyalist";
+    
+    // 8. Needs Attention: Average recency and frequency, maybe didn't buy very recently.
+    if (R >= 2 && R <= 3 && F >= 2 && F <= 3) return "Needs Attention";
+    
+    // 9. About to Sleep: Below average recency and frequency.
+    if (R === 2 && F <= 2) return "About to Sleep";
+    
+    // 10. Lost: Lowest scores across the board.
+    if (R <= 1 && F <= 1 && M <= 1) return "Lost";
+    
+    // 11. Hibernating: Last purchase was long back, low frequency.
+    if (R <= 2 && F <= 2) return "Hibernating";
+    
+    // Fallbacks just in case a combination drops through
+    if (R >= 4) return "Potential Loyalist";
+    if (R === 3) return "Needs Attention";
     return "Lost";
 };
 

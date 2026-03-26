@@ -22,6 +22,7 @@ const adminRoutes = require('./src/admins/admin.route')
 const reviewRoutes = require('./src/reviews/review.route')
 const blogRoutes = require('./src/blogs/blog.route')
 const inventoryRoutes = require('./src/inventory/inventory.route')
+const statsRoutes = require('./src/stats/stats.route')
 const initAbandonedCartCron = require('./src/orders/orderCron')
 app.use("/api/books", bookRoutes)
 app.use("/api", uploadRouter)
@@ -32,6 +33,7 @@ app.use("/api/admin", adminRoutes)
 app.use("/api/reviews", reviewRoutes)
 app.use("/api/blogs", blogRoutes)
 app.use("/api/inventory", inventoryRoutes)
+app.use("/api/stats", statsRoutes)
 
 initAbandonedCartCron();
 

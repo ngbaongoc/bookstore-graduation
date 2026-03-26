@@ -7,8 +7,7 @@ router.post('/login', adminLogin);
 
 // Staff registration
 router.post('/register', registerAdmin);
-+
-+// RFM Analysis report
-+router.get('/rfm-report', getRFMReport);
+// RFM Analysis report
+router.get('/rfm-report', getRFMReport);
 
 module.exports = router;
