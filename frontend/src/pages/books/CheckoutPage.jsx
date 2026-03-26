@@ -4,8 +4,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useCreateOrderMutation } from '../../redux/features/orders/ordersApi'
 import { clearCart } from '../../redux/features/cart/cartSlice'
 import Swal from 'sweetalert2'
+import { useAuth } from '../../context/AuthContext'
 
 const CheckoutPage = () => {
+    const { currentUser, userProfile, loading, profileLoading } = useAuth();
     const cartItems = useSelector(state => state.cart.cartItems);
     const totalPrice = cartItems.reduce((acc, item) => acc + (item.newPrice || item.price) * (item.quantity || 1), 0).toFixed(0);
     const totalQuantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
@@ -15,15 +17,26 @@ const CheckoutPage = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
+        name: userProfile?.username || '',
+        email: currentUser?.email || '',
+        phone: userProfile?.phone || '',
         street: '',
         city: '',
         country: '',
         state: '',
         zipcode: ''
     });
+
+    React.useEffect(() => {
+        if (userProfile) {
+            setFormData(prev => ({ 
+                ...prev, 
+                name: userProfile.username || prev.name,
+                email: currentUser?.email || prev.email,
+                phone: userProfile.phone || prev.phone
+            }))
+        }
+    }, [userProfile, currentUser])
 
     const [isChecked, setIsChecked] = useState(false);
 
@@ -51,7 +64,8 @@ const CheckoutPage = () => {
                 zipcode: formData.zipcode,
             },
             totalPrice: Number(totalPrice),
-            productIds: cartItems.map(item => item._id),
+            productIds: cartItems.map(item => ({ productId: item._id, quantity: item.quantity || 1 })),
+            userId: userProfile?.userId || currentUser?.uid // Use 6-digit userId if available
         }
 
         try {
@@ -69,6 +83,27 @@ const CheckoutPage = () => {
             console.error("Failed to place order", error);
             Swal.fire("Error", "Failed to place order. Please try again.", "error");
         }
+    }
+
+    if (loading || profileLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen">
+                <h2 className="text-2xl font-bold mb-4">Loading your profile...</h2>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        )
+    }
+
+    if (currentUser && !userProfile) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen px-4 text-center">
+                <h2 className="text-2xl font-bold mb-4">Profile Required</h2>
+                <p className="text-gray-600 mb-6">You must complete your profile (Username, Phone Number) before placing an order.</p>
+                <Link to="/settings" className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+                    Go to Settings
+                </Link>
+            </div>
+        )
     }
 
     if (cartItems.length === 0) {

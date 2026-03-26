@@ -15,10 +15,12 @@ import 'swiper/css/navigation';
 
 import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi';
 
+import { useAuth } from '../../context/AuthContext';
+
 const categories = ["Choose a genre", "Business", "Fiction", "Horror", "Adventure", "Marketing"]
 
 const Products = () => {
-
+    const { isAdmin } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState("Choose a genre");
 
     const { data: books = [], isLoading, isError } = useFetchAllBooksQuery();
@@ -32,11 +34,15 @@ const Products = () => {
         <div className='py-10'>
             <div className="flex justify-between items-center mb-6">
                 <h2 className='text-3xl font-semibold'>Products</h2>
-                <Link
-                    to="/add-book"
-                    className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md transition-colors flex items-center gap-2">
-                    <span>+ Add New Book</span>
-                </Link>
+                {
+                    isAdmin && (
+                        <Link
+                            to="/add-book"
+                            className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md transition-colors flex items-center gap-2">
+                            <span>+ Add New Book</span>
+                        </Link>
+                    )
+                }
             </div>
 
             {/* category filtering */}

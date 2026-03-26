@@ -1,0 +1,365 @@
+[
+  {
+    "user": {
+      "userId": "990001",
+      "username": "Jason Agatha",
+      "email": "jason.agatha@gmail.com"
+    },
+    "orders": [
+      {
+        "userId": "990001",
+        "totalPrice": 500000,
+        "createdAt": "2026-03-23T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca18"
+        ]
+      },
+      {
+        "userId": "990001",
+        "totalPrice": 500000,
+        "createdAt": "2026-03-13T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca1a"
+        ]
+      },
+      {
+        "userId": "990001",
+        "totalPrice": 500000,
+        "createdAt": "2026-03-03T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca1c"
+        ]
+      },
+      {
+        "userId": "990001",
+        "totalPrice": 500000,
+        "createdAt": "2026-02-21T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca1e"
+        ]
+      },
+      {
+        "userId": "990001",
+        "totalPrice": 500000,
+        "createdAt": "2026-02-11T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca20"
+        ]
+      },
+      {
+        "userId": "990001",
+        "totalPrice": 500000,
+        "createdAt": "2026-02-01T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca22"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990002",
+      "username": "Robert Green",
+      "email": "robert.green@gmail.com"
+    },
+    "orders": [
+      {
+        "userId": "990002",
+        "totalPrice": 416670,
+        "createdAt": "2026-02-08T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca27"
+        ]
+      },
+      {
+        "userId": "990002",
+        "totalPrice": 416666,
+        "createdAt": "2026-01-29T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca29"
+        ]
+      },
+      {
+        "userId": "990002",
+        "totalPrice": 416666,
+        "createdAt": "2026-01-19T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca2b"
+        ]
+      },
+      {
+        "userId": "990002",
+        "totalPrice": 416666,
+        "createdAt": "2026-01-09T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca2d"
+        ]
+      },
+      {
+        "userId": "990002",
+        "totalPrice": 416666,
+        "createdAt": "2025-12-30T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca2f"
+        ]
+      },
+      {
+        "userId": "990002",
+        "totalPrice": 416666,
+        "createdAt": "2025-12-20T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c4eeeb1c324bd2ca31"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990003",
+      "username": "Emily Chen",
+      "email": "emily.chen@yahoo.com"
+    },
+    "orders": [
+      {
+        "userId": "990003",
+        "totalPrice": 266668,
+        "createdAt": "2026-03-10T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca36"
+        ]
+      },
+      {
+        "userId": "990003",
+        "totalPrice": 266666,
+        "createdAt": "2026-02-28T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca38"
+        ]
+      },
+      {
+        "userId": "990003",
+        "totalPrice": 266666,
+        "createdAt": "2026-02-18T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca3a"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990004",
+      "username": "Michael Wong",
+      "email": "michael.wong@outlook.com"
+    },
+    "orders": [
+      {
+        "userId": "990004",
+        "totalPrice": 150000,
+        "createdAt": "2026-03-25T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca3f"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990005",
+      "username": "Sarah Smith",
+      "email": "sarah.smith@gmail.com"
+    },
+    "orders": [
+      {
+        "userId": "990005",
+        "totalPrice": 150000,
+        "createdAt": "2026-02-13T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca44"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990006",
+      "username": "David Johnson",
+      "email": "david.johnson@hotmail.com"
+    },
+    "orders": [
+      {
+        "userId": "990006",
+        "totalPrice": 375000,
+        "createdAt": "2026-02-08T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca49"
+        ]
+      },
+      {
+        "userId": "990006",
+        "totalPrice": 375000,
+        "createdAt": "2026-01-29T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca4b"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990007",
+      "username": "Jessica Brown",
+      "email": "jessica.brown@gmail.com"
+    },
+    "orders": [
+      {
+        "userId": "990007",
+        "totalPrice": 150000,
+        "createdAt": "2025-12-25T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca50"
+        ]
+      },
+      {
+        "userId": "990007",
+        "totalPrice": 150000,
+        "createdAt": "2025-12-15T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca52"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990008",
+      "username": "Chris Davis",
+      "email": "chris.davis@yahoo.com"
+    },
+    "orders": [
+      {
+        "userId": "990008",
+        "totalPrice": 375000,
+        "createdAt": "2025-09-06T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca57"
+        ]
+      },
+      {
+        "userId": "990008",
+        "totalPrice": 375000,
+        "createdAt": "2025-08-27T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca59"
+        ]
+      },
+      {
+        "userId": "990008",
+        "totalPrice": 375000,
+        "createdAt": "2025-08-17T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca5b"
+        ]
+      },
+      {
+        "userId": "990008",
+        "totalPrice": 375000,
+        "createdAt": "2025-08-07T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca5d"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990009",
+      "username": "Amanda Wilson",
+      "email": "amanda.wilson@gmail.com"
+    },
+    "orders": [
+      {
+        "userId": "990009",
+        "totalPrice": 416670,
+        "createdAt": "2025-03-30T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca62"
+        ]
+      },
+      {
+        "userId": "990009",
+        "totalPrice": 416666,
+        "createdAt": "2025-03-20T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca64"
+        ]
+      },
+      {
+        "userId": "990009",
+        "totalPrice": 416666,
+        "createdAt": "2025-03-10T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca66"
+        ]
+      },
+      {
+        "userId": "990009",
+        "totalPrice": 416666,
+        "createdAt": "2025-02-28T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca68"
+        ]
+      },
+      {
+        "userId": "990009",
+        "totalPrice": 416666,
+        "createdAt": "2025-02-18T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca6a"
+        ]
+      },
+      {
+        "userId": "990009",
+        "totalPrice": 416666,
+        "createdAt": "2025-02-08T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca6c"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990010",
+      "username": "Matthew Taylor",
+      "email": "matthew.taylor@outlook.com"
+    },
+    "orders": [
+      {
+        "userId": "990010",
+        "totalPrice": 150000,
+        "createdAt": "2025-10-26T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca71"
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "userId": "990011",
+      "username": "Jennifer Thomas",
+      "email": "jennifer.thomas@gmail.com"
+    },
+    "orders": [
+      {
+        "userId": "990011",
+        "totalPrice": 150000,
+        "createdAt": "2025-02-18T12:00:00.000Z",
+        "productIds": [
+          "69c3c5c5eeeb1c324bd2ca76"
+        ]
+      }
+    ]
+  }
+]

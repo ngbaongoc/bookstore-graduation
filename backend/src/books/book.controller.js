@@ -13,6 +13,7 @@ const postABook = async (req, res) => {
 
 // get all books
 const getAllBooks = async (req, res) => {
+    console.log("Fetching all books...");
     try {
         const books = await Book.find().sort({ createdAt: -1 });
         res.status(200).send(books)

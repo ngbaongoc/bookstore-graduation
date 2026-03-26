@@ -26,9 +26,17 @@ const orderSchema = new mongoose.Schema({
     },
     productIds: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Book',
-            required: true,
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Book',
+                required: true,
+            },
+            quantity: {
+                type: Number,
+                required: true,
+                min: 1,
+                default: 1,
+            }
         }
     ],
     status: {
@@ -40,6 +48,10 @@ const orderSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    userId: {
+        type: String,
+        required: true,
+    }
 }, {
     timestamps: true,
 });
