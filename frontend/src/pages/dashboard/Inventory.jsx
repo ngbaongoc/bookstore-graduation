@@ -59,11 +59,12 @@ const Inventory = () => {
         setAdjustModalOpen(true)
     }
 
-    const lowStockBooks = books.filter(b => (b.inventory?.inHouseQuantity || 0) < 5)
+    const lowStockBooks = books.filter(b => (b.inventory?.inHouseQuantity || 0) < 10)
 
     const getStockBadge = (qty) => {
-        if (qty >= 5) return <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Good ({qty})</span>
-        if (qty > 0) return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full cursor-help" title="Warning: Low Stock!">Low ({qty})</span>
+        if (qty >= 10) return <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Good ({qty})</span>
+        if (qty >= 5) return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full cursor-help" title="Warning: Stock is getting low!">Warning ({qty})</span>
+        if (qty > 0) return <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full animate-pulse shadow-sm shadow-orange-100" title="Critical: Very Low Stock!">Critical ({qty})</span>
         return <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full animate-pulse shadow-sm shadow-red-200">Out of Stock</span>
     }
 
@@ -93,18 +94,30 @@ const Inventory = () => {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-gray-800">Inventory</h1>
+            <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Inventory</h1>
+                    <p className="text-gray-500 text-sm mt-1 font-medium">Manage your book catalog and shelf quantities</p>
+                </div>
+                <Link to="/admin/add-book" className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2 group">
+                    <MdAddCircleOutline className="text-2xl group-hover:rotate-90 transition-transform duration-300" />
+                    <span>Add New Book</span>
+                </Link>
+            </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {stats.map(({ label, value, icon, link, linkLabel }) => (
-                    <div key={label} className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-3 border border-gray-100">
+                    <div key={label} className="bg-white rounded-xl shadow-sm p-6 flex flex-col gap-3 border border-gray-100 hover:border-gray-300 transition-all">
                         <div className="flex items-center justify-between">
                             <span className="text-gray-500 text-sm font-medium">{label}</span>
-                            {icon}
+                            <div className="bg-gray-50 p-2 rounded-lg">{icon}</div>
                         </div>
                         <p className="text-4xl font-bold text-gray-900">{value}</p>
-                        <Link to={link} className="text-blue-500 hover:underline text-sm">{linkLabel} →</Link>
+                        <Link to={link || "#"} className="text-blue-500 hover:text-blue-700 font-bold text-sm flex items-center gap-1 group">
+                            {linkLabel} 
+                            <span className="group-hover:translate-x-1 transition-transform">→</span>
+                        </Link>
                     </div>
                 ))}
             </div>
@@ -115,45 +128,59 @@ const Inventory = () => {
                     <div className="flex items-center gap-4">
                        <span className="text-3xl drop-shadow-sm">⚠️</span>
                        <div>
-                           <p className="font-bold text-red-800">Critical Inventory Warning</p>
-                           <p className="text-red-700 text-sm mt-0.5">There are <b>{lowStockBooks.length}</b> book(s) with an in-house quantity under 5 units. Please restock immediately to avoid blocking customer orders.</p>
+                           <p className="font-bold text-red-800">Inventory Monitoring Alert</p>
+                           <p className="text-red-700 text-sm mt-0.5">There are <b>{lowStockBooks.length}</b> book(s) with an in-house quantity under 10 units. Please review stock levels to prevent fulfillment delays.</p>
                        </div>
                     </div>
+                    <button className="text-sm font-bold text-red-600 hover:underline bg-white px-4 py-2 rounded-lg shadow-sm border border-red-100">Review Items</button>
                 </div>
             )}
 
             {/* Live Shelf Inventory Table */}
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 overflow-x-auto">
-                <div className="flex items-center gap-2 mb-4">
-                    <MdInventory className="text-2xl text-green-500" />
-                    <h2 className="text-xl font-semibold text-gray-800">Live Shelf Inventory</h2>
+                <div className="flex items-center gap-2 mb-6">
+                    <div className="bg-green-50 p-1.5 rounded-lg">
+                        <MdInventory className="text-2xl text-green-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-800">Live Shelf Inventory</h2>
                 </div>
                 <table className="w-full text-sm text-left">
                     <thead>
                         <tr className="text-gray-400 border-b">
-                            <th className="pb-3 font-medium">SKU (ISBN)</th>
-                            <th className="pb-3 font-medium">Title</th>
-                            <th className="pb-3 font-medium">Bin Location</th>
-                            <th className="pb-3 font-medium">In-House Qty</th>
-                            <th className="pb-3 font-medium">Reserved</th>
-                            <th className="pb-3 font-medium text-right">Actions</th>
+                            <th className="pb-4 px-2 font-semibold">SKU (ISBN)</th>
+                            <th className="pb-4 px-2 font-semibold">Title</th>
+                            <th className="pb-4 px-2 font-semibold">Bin Location</th>
+                            <th className="pb-4 px-2 font-semibold text-center">In-House Qty</th>
+                            <th className="pb-4 px-2 font-semibold text-center">Reserved</th>
+                            <th className="pb-4 px-2 font-semibold text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {books.map((book) => {
-                            const isLowStock = (book.inventory?.inHouseQuantity || 0) < 5;
+                            const inHouseQty = book.inventory?.inHouseQuantity || 0;
+                            const isLowStock = inHouseQty < 10;
+                            const isCritical = inHouseQty < 5;
                             return (
-                            <tr key={book._id} className={`border-b last:border-0 transition ${isLowStock ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'}`}>
-                                <td className="py-3 text-gray-500">{book.isbn || 'N/A'}</td>
-                                <td className="py-3 font-medium text-gray-800 truncate max-w-[200px]">{book.title}</td>
-                                <td className="py-3 text-gray-600">{book.inventory?.binLocation || 'General Shelf'}</td>
-                                <td className="py-3">
+                            <tr key={book._id} className={`border-b last:border-0 transition ${isCritical ? 'bg-red-50 hover:bg-red-100' : isLowStock ? 'bg-yellow-50 hover:bg-yellow-100' : 'hover:bg-gray-50'}`}>
+                                <td className="py-4 px-2 text-gray-500 font-mono tracking-tighter">{book.isbn || 'N/A'}</td>
+                                <td className="py-4 px-2">
+                                    <Link 
+                                        to={`/admin/edit/${book._id}`} 
+                                        className="font-bold text-gray-900 hover:text-blue-600 transition-colors truncate block max-w-[280px]"
+                                        title={`Click to edit ${book.title}`}
+                                    >
+                                        {book.title}
+                                    </Link>
+                                </td>
+                                <td className="py-4 px-2 text-gray-600">{book.inventory?.binLocation || 'General Shelf'}</td>
+                                <td className="py-4 px-2 text-center">
                                     {getStockBadge(book.inventory?.inHouseQuantity || 0)}
                                 </td>
-                                <td className="py-3 text-gray-600">{book.inventory?.reservedQuantity || 0}</td>
-                                <td className="py-3 text-right">
-                                    <button onClick={() => openAdjust(book)} className="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center justify-end gap-1 ml-auto bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded transition">
-                                        <MdAddCircleOutline /> Adjust
+                                <td className="py-4 px-2 text-center text-gray-600 font-medium">{book.inventory?.reservedQuantity || 0}</td>
+                                <td className="py-4 px-2 text-right">
+                                    <button onClick={() => openAdjust(book)} className="text-blue-700 hover:text-white font-bold text-xs flex items-center justify-center gap-1 ml-auto bg-blue-100 hover:bg-blue-600 px-4 py-2.5 rounded-xl transition-all shadow-sm">
+                                        <MdAddCircleOutline className="text-sm" /> 
+                                        Adjust
                                     </button>
                                 </td>
                             </tr>

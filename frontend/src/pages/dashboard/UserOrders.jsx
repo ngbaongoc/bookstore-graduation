@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useGetOrdersByUserIdQuery } from '../../redux/features/orders/ordersApi'
 import { MdReceipt, MdInventory, MdLocalShipping, MdCheckCircle, MdHome, MdHistory, MdArrowBack } from 'react-icons/md'
+import formatCurrency from '../../utils/formatCurrency'
 
 const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery']
 
@@ -18,7 +19,7 @@ const UserOrders = () => {
     const { data: orders = [], isLoading } = useGetOrdersByUserIdQuery(userId, { skip: !userId })
 
     // Filter only DELIVERED orders as requested
-    const deliveredOrders = orders.filter(order => order.status === 'Delivery' || order.status === 'completed')
+    const deliveredOrders = orders.filter(order => order.status === 'Delivery')
 
     if (isLoading) return <div className="p-8">Loading user orders...</div>
 
@@ -58,7 +59,7 @@ const UserOrders = () => {
                                     </div>
                                     <div className="sm:text-right bg-gray-50 p-4 rounded-xl border border-gray-100">
                                         <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Order Total</p>
-                                        <p className="text-2xl font-bold text-gray-800">${order.totalPrice}</p>
+                                        <p className="text-2xl font-bold text-gray-800">{formatCurrency(order.totalPrice)}</p>
                                     </div>
                                 </div>
 

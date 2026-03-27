@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema({
     ],
     status: {
         type: String,
-        enum: ['pending', 'Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery'],
+        enum: ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery'],
         default: 'Pending',
     },
     stageDates: {

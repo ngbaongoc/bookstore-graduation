@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { MdInventory, MdOutlineShoppingCart, MdLibraryBooks } from 'react-icons/md'
+import formatCurrency from '../../utils/formatCurrency'
 import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi'
 
 const Dashboard = () => {
@@ -65,7 +66,7 @@ const Dashboard = () => {
                                 <td className="py-3 text-gray-600">{book.author}</td>
                                 <td className="py-3 text-gray-600">{book.category}</td>
                                 <td className="py-3 text-right text-gray-800">
-                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(book.price || book.newPrice)}
+                                    {formatCurrency(book.price || book.newPrice)}
                                 </td>
                             </tr>
                         ))}

@@ -74,11 +74,12 @@ const ELogisticsDashboard = () => {
     }
 
     const readyForHandover = books.filter(b => b.inventory?.reservedQuantity > 0)
-    const lowStockBooks = books.filter(b => (b.inventory?.inHouseQuantity || 0) < 5)
+    const lowStockBooks = books.filter(b => (b.inventory?.inHouseQuantity || 0) < 10)
 
     const getStockBadge = (qty) => {
-        if (qty >= 5) return <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Good ({qty})</span>
-        if (qty > 0) return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full cursor-help" title="Warning: Low Stock!">Low ({qty})</span>
+        if (qty >= 10) return <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Good ({qty})</span>
+        if (qty >= 5) return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full cursor-help" title="Warning: Stock is getting low!">Warning ({qty})</span>
+        if (qty > 0) return <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full animate-pulse shadow-sm shadow-orange-100" title="Critical: Very Low Stock!">Critical ({qty})</span>
         return <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full animate-pulse shadow-sm shadow-red-200">Out of Stock</span>
     }
 
@@ -93,8 +94,8 @@ const ELogisticsDashboard = () => {
                         <div className="flex items-center gap-4">
                            <span className="text-3xl drop-shadow-sm">⚠️</span>
                            <div>
-                               <p className="font-bold text-red-800">Critical Inventory Warning</p>
-                               <p className="text-red-700 text-sm mt-0.5">There are <b>{lowStockBooks.length}</b> book(s) with an in-house quantity under 5 units. Please restock immediately to avoid blocking customer orders.</p>
+                               <p className="font-bold text-red-800">Inventory Monitoring Alert</p>
+                               <p className="text-red-700 text-sm mt-0.5">There are <b>{lowStockBooks.length}</b> book(s) with an in-house quantity under 10 units. Please review stock levels to prevent fulfillment delays.</p>
                            </div>
                         </div>
                     </div>
@@ -118,10 +119,12 @@ const ELogisticsDashboard = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {books.map((book) => {
-                                const isLowStock = (book.inventory?.inHouseQuantity || 0) < 5;
+                             {books.map((book) => {
+                                const inHouseQty = book.inventory?.inHouseQuantity || 0;
+                                const isLowStock = inHouseQty < 10;
+                                const isCritical = inHouseQty < 5;
                                 return (
-                                <tr key={book._id} className={`border-b last:border-0 transition ${isLowStock ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'}`}>
+                                <tr key={book._id} className={`border-b last:border-0 transition ${isCritical ? 'bg-red-50 hover:bg-red-100' : isLowStock ? 'bg-yellow-50 hover:bg-yellow-100' : 'hover:bg-gray-50'}`}>
                                     <td className="py-3 text-gray-500">{book.isbn || 'N/A'}</td>
                                     <td className="py-3 font-medium text-gray-800 truncate max-w-[200px]">{book.title}</td>
                                     <td className="py-3 text-gray-600">{book.inventory?.binLocation || 'General Shelf'}</td>

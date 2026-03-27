@@ -5,6 +5,7 @@ import { useCreateOrderMutation } from '../../redux/features/orders/ordersApi'
 import { clearCart } from '../../redux/features/cart/cartSlice'
 import Swal from 'sweetalert2'
 import { useAuth } from '../../context/AuthContext'
+import formatCurrency from '../../utils/formatCurrency'
 
 const CheckoutPage = () => {
     const { currentUser, userProfile, loading, profileLoading } = useAuth();
@@ -120,7 +121,7 @@ const CheckoutPage = () => {
             <div className="container max-w-screen-lg mx-auto">
                 <div>
                     <h2 className="font-semibold text-xl text-gray-600">Cash On Delivery</h2>
-                    <p className="text-gray-500 mb-2">Total Price: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}</p>
+                    <p className="text-gray-500 mb-2">Total Price: {formatCurrency(totalPrice)}</p>
                     <p className="text-gray-500 mb-6 font-semibold">Items: {totalQuantity}</p>
 
                     <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">

@@ -16,7 +16,12 @@ export const statsApi = createApi({
     tagTypes: ['Stats'],
     endpoints: (builder) => ({
         getDashboardStats: builder.query({
-            query: (range) => `/?range=${range}`,
+            query: ({ range, startDate, endDate }) => {
+                let url = `/?range=${range}`;
+                if (startDate) url += `&startDate=${startDate}`;
+                if (endDate) url += `&endDate=${endDate}`;
+                return url;
+            },
             providesTags: ['Stats'],
         }),
     }),

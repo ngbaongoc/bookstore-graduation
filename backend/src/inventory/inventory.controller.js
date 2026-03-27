@@ -66,7 +66,7 @@ const getAlerts = async (req, res) => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const newOrdersCount = await Order.countDocuments({ createdAt: { $gte: oneDayAgo } });
     
-    const lowStockBooks = await Book.find({ "inventory.inHouseQuantity": { $lt: 5 } }).select('title inventory.inHouseQuantity');
+    const lowStockBooks = await Book.find({ "inventory.inHouseQuantity": { $lt: 10 } }).select('title inventory.inHouseQuantity');
 
     const cancelRequestsCount = await Order.countDocuments({ 'cancelRequest.requested': true, cancelOrder: { $ne: true } });
     

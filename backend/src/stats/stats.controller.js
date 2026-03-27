@@ -1,50 +1,57 @@
 const Order = require('../orders/order.model');
-const Book = require('../books/book.model');
 
 const getDashboardStats = async (req, res) => {
     try {
-        const { range = 'Month' } = req.query; // Day, Week, Month, Year
+        const { range = 'Month', startDate, endDate } = req.query;
         
+        let dateFilter = { cancelOrder: { $ne: true } };
         let datePart;
-        let limitPoints = 30;
+        let limitPoints = 31;
 
-        switch(range) {
-            case 'Day':
-                datePart = { $dateToString: { format: "%H:00", date: "$createdAt" } }; // Hourly for today
-                limitPoints = 24;
-                break;
-            case 'Week':
-                datePart = {
-                    $switch: {
-                        branches: [
-                            { case: { $eq: [{ $dayOfWeek: "$createdAt" }, 1] }, then: "Sun" },
-                            { case: { $eq: [{ $dayOfWeek: "$createdAt" }, 2] }, then: "Mon" },
-                            { case: { $eq: [{ $dayOfWeek: "$createdAt" }, 3] }, then: "Tue" },
-                            { case: { $eq: [{ $dayOfWeek: "$createdAt" }, 4] }, then: "Wed" },
-                            { case: { $eq: [{ $dayOfWeek: "$createdAt" }, 5] }, then: "Thu" },
-                            { case: { $eq: [{ $dayOfWeek: "$createdAt" }, 6] }, then: "Fri" },
-                            { case: { $eq: [{ $dayOfWeek: "$createdAt" }, 7] }, then: "Sat" }
-                        ],
-                        default: "Unknown"
-                    }
-                };
-                limitPoints = 7;
-                break;
-            case 'Month':
-                datePart = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
-                limitPoints = 30;
-                break;
-            case 'Year':
-                datePart = { $dateToString: { format: "%Y-%m", date: "$createdAt" } };
-                limitPoints = 12;
-                break;
-            default:
-                datePart = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+        // Custom Date Range Handling
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); // Inclusion of the full end day
+
+            dateFilter.createdAt = { $gte: start, $lte: end };
+            
+            // Dynamically decide granularity
+            const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 2) {
+                datePart = { $dateToString: { format: "%H:00", date: "$createdAt" } }; // Hourly
+            } else if (diffDays <= 60) {
+                datePart = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }; // Daily
+            } else {
+                datePart = { $dateToString: { format: "%Y-%m", date: "$createdAt" } }; // Monthly
+            }
+            limitPoints = 100; // Allow more points for custom ranges
+        } else {
+            // Preset Range Handling
+            switch(range) {
+                case 'Month':
+                    // Handled via startDate/endDate from frontend — this is a fallback
+                    const monthStart = new Date();
+                    monthStart.setMonth(monthStart.getMonth() - 1);
+                    dateFilter.createdAt = { $gte: monthStart };
+                    datePart = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+                    limitPoints = 31;
+                    break;
+                case 'Year':
+                    const yearStart = new Date(new Date().getFullYear(), 0, 1);
+                    const yearEnd = new Date(new Date().getFullYear(), 11, 31, 23, 59, 59, 999);
+                    dateFilter.createdAt = { $gte: yearStart, $lte: yearEnd };
+                    datePart = { $dateToString: { format: "%Y-%m", date: "$createdAt" } };
+                    limitPoints = 12;
+                    break;
+                default:
+                    datePart = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+            }
         }
 
         // 1. Sales Performance (Time-Series)
         const salesPerformance = await Order.aggregate([
-            { $match: { cancelOrder: { $ne: true } } },
+            { $match: dateFilter },
             {
                 $group: {
                     _id: datePart,
@@ -58,7 +65,7 @@ const getDashboardStats = async (req, res) => {
 
         // 2. Top 5 Most Sold Books
         const topBooks = await Order.aggregate([
-            { $match: { cancelOrder: { $ne: true } } },
+            { $match: dateFilter },
             { $unwind: "$productIds" },
             {
                 $group: {
@@ -85,47 +92,46 @@ const getDashboardStats = async (req, res) => {
             }
         ]);
 
-        // 3. Geographic Insights (Most Sold Region)
+        // 3. Geographic Insights
         const regionStats = await Order.aggregate([
-            { $match: { cancelOrder: { $ne: true } } },
+            { $match: dateFilter },
             {
                 $group: {
-                    _id: { $ifNull: ["$shippingAddress.city", { $ifNull: ["$address.city", "Unknown"] }] },
+                    _id: { $ifNull: ["$shippingAddress.city", "Unknown"] },
                     count: { $sum: 1 }
                 }
             },
             { $sort: { count: -1 } },
-            { $limit: 5 } // Top 5 cities
+            { $limit: 5 }
         ]);
 
         // 4. Logistics Health (Cancellation Analysis)
+        // Build cancelFilter: take date bounds from dateFilter but set cancelOrder: true
+        const { cancelOrder: _excluded, ...dateFilterWithoutCancel } = dateFilter;
+        const cancelFilter = { ...dateFilterWithoutCancel, cancelOrder: true };
+
         const cancellationStats = await Order.aggregate([
-            { $match: { cancelOrder: true } },
+            { $match: cancelFilter },
             {
                 $group: {
-                    _id: { $ifNull: ["$cancellationReason", { $ifNull: ["$cancelRequest.reason", "Other"] }] },
+                    _id: { $ifNull: ["$cancellationReason", "Other"] },
                     count: { $sum: 1 }
                 }
             }
         ]);
 
-        // 5. Value Cards
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        
-        const todayRevenueResult = await Order.aggregate([
-            { $match: { createdAt: { $gte: todayStart }, cancelOrder: { $ne: true } } },
+        // 5. Value Cards Metrics
+        const totalNonCanceled = await Order.countDocuments(dateFilter);      // non-cancelled orders
+        const totalCanceled = await Order.countDocuments(cancelFilter);         // cancelled orders
+        const totalAllOrders = totalNonCanceled + totalCanceled;
+        const cancellationRate = totalAllOrders > 0 ? ((totalCanceled / totalAllOrders) * 100).toFixed(1) : 0;
+
+        // Revenue for the selected period
+        const periodRevenueResult = await Order.aggregate([
+            { $match: dateFilter },
             { $group: { _id: null, total: { $sum: "$totalPrice" } } }
         ]);
 
-        const totalOrders = await Order.countDocuments();
-        const canceledOrders = await Order.countDocuments({ cancelOrder: true });
-        
-        // Active Reserved Units (from Book collection)
-        const books = await Book.find({});
-        const activeReservedUnits = books.reduce((acc, book) => acc + (book.inventory?.reservedQuantity || 0), 0);
-
-        const cancellationRate = totalOrders > 0 ? ((canceledOrders / totalOrders) * 100).toFixed(1) : 0;
 
         res.status(200).json({
             salesPerformance,
@@ -133,9 +139,8 @@ const getDashboardStats = async (req, res) => {
             regionStats,
             cancellationStats,
             cards: {
-                todayRevenue: todayRevenueResult[0]?.total || 0,
-                totalOrders,
-                activeReservedUnits,
+                todayRevenue: periodRevenueResult[0]?.total || 0,
+                totalOrders: totalAllOrders,
                 cancellationRate
             }
         });

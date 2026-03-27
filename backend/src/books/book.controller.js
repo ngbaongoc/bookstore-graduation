@@ -84,8 +84,7 @@ const addReview = async (req, res) => {
             return res.status(404).send({ message: "Book not Found!" });
         }
 
-        // Update reviews and stats
-        book.review_text.push(review);
+        // Update stats
 
         // Calculate new average score
         const totalScore = (book.average_review_score * book.number_of_review) + Number(score);

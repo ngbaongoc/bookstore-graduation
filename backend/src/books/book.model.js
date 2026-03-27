@@ -38,10 +38,6 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  review_text: {
-    type: [String],
-    default: [],
-  },
   number_of_review: {
     type: Number,
     default: 0,

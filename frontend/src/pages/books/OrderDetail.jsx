@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useGetOrdersByEmailQuery, useRequestCancelOrderMutation } from '../../redux/features/orders/ordersApi'
 import { useAuth } from '../../context/AuthContext'
 import { MdReceipt, MdInventory, MdLocalShipping, MdCheckCircle, MdHome, MdHistory, MdArrowBack, MdCancel } from 'react-icons/md'
+import formatCurrency from '../../utils/formatCurrency'
 import Swal from 'sweetalert2'
 
 const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery']
@@ -80,7 +81,7 @@ const OrderDetail = () => {
                     </div>
                     <div className="sm:text-right bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Order Total</p>
-                        <p className="text-2xl font-bold text-gray-800">${order.totalPrice}</p>
+                        <p className="text-2xl font-bold text-gray-800">{formatCurrency(order.totalPrice)}</p>
                     </div>
                 </div>
 

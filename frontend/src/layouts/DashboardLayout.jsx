@@ -33,7 +33,6 @@ const DashboardLayout = () => {
     const navLinks = [
         { to: '/admin', label: 'Inventory', icon: <MdInventory className="text-xl" /> },
         { to: '/admin/manage-users', label: 'Manage Users', icon: <MdDashboard className="text-xl opacity-70" /> },
-        { to: '/admin/add-book', label: 'Add New Book', icon: <MdInventory className="text-xl" /> },
         { to: '/admin/add-blog', label: 'Blog Posts', icon: <MdArticle className="text-xl" /> },
         { to: '/admin/orders', label: 'Orders', icon: <MdOutlineShoppingCart className="text-xl" /> },
         { to: '/admin/sales', label: 'Sales Intelligence', icon: <MdTrendingUp className="text-xl text-blue-400" /> },
@@ -108,7 +107,7 @@ const DashboardLayout = () => {
                                         <div className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${alerts?.lowStockBooksCount > 0 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-gray-300'}`}></div>
                                         <div>
                                             <p className="text-sm font-semibold text-gray-800">{alerts?.lowStockBooksCount || 0} Low Stock Alert</p>
-                                            <p className="text-xs text-gray-500 leading-tight">Items dropping under 5 units</p>
+                                            <p className="text-xs text-gray-500 leading-tight">Items dropping under 10 units</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3 border-t pt-3">

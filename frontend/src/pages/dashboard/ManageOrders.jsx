@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { useGetAllOrdersQuery, useUpdateOrderStatusMutation, useApproveCancelOrderMutation, useDisapproveCancelOrderMutation } from '../../redux/features/orders/ordersApi'
+import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi'
 import Swal from 'sweetalert2'
 import { MdReceipt, MdInventory, MdLocalShipping, MdCheckCircle, MdHome, MdHistory, MdCancel } from 'react-icons/md'
+import formatCurrency from '../../utils/formatCurrency'
+import { Link } from 'react-router-dom'
 
 const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery']
 
@@ -14,13 +17,19 @@ const STAGE_ICONS = [
 ]
 
 const ManageOrders = () => {
-    const { data: orders = [], isLoading, refetch } = useGetAllOrdersQuery()
+    const { data: orders = [], isLoading, error, refetch } = useGetAllOrdersQuery()
+    
+    console.log('ManageOrders Render:', { orders, isLoading, error });
+
+    const { data: books = [] } = useFetchAllBooksQuery()
     const [updateOrderStatus] = useUpdateOrderStatusMutation()
     const [approveCancel] = useApproveCancelOrderMutation()
     const [disapproveCancel] = useDisapproveCancelOrderMutation()
 
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [showCancelModal, setShowCancelModal] = useState(false)
+
+    const lowStockBooks = books.filter(b => (b.inventory?.inHouseQuantity || 0) < 10)
 
     const handleAdvanceStage = async (orderId, currentStage) => {
         const currentIndex = STAGES.indexOf(currentStage)
@@ -71,11 +80,42 @@ const ManageOrders = () => {
         }
     }
 
-    if (isLoading) return <div className="p-8">Loading orders...</div>
-
+    if (isLoading) return <div className="p-8 text-center text-gray-500">Loading orders...</div>
+    
+    if (error) {
+        return (
+            <div className="p-8 text-center bg-red-50 rounded-xl border border-red-100 m-6">
+                <p className="text-red-700 font-bold">Failed to load orders.</p>
+                <p className="text-red-600 text-sm mt-1">{error?.data?.message || 'Unauthorized access or network error.'}</p>
+                {(error.status === 401 || error.status === 403) && (
+                    <button 
+                        onClick={() => { localStorage.removeItem('token'); window.location.href = '/admin/login'; }}
+                        className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-bold"
+                    >
+                        Re-login as Admin
+                    </button>
+                )}
+            </div>
+        )
+    }
+    
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">Manage Orders</h1>
+        <div className="p-6 space-y-6">
+            <h1 className="text-2xl font-bold text-gray-800">Manage Orders</h1>
+
+            {/* Low Stock Warning Banner (Synced from Inventory) */}
+            {lowStockBooks.length > 0 && (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-4">
+                       <span className="text-3xl drop-shadow-sm">⚠️</span>
+                       <div>
+                           <p className="font-bold text-red-800">Inventory Monitoring Alert</p>
+                           <p className="text-red-700 text-sm mt-0.5">There are <b>{lowStockBooks.length}</b> book(s) with an in-house quantity under 10 units. Verify stock levels before advancing orders to processing.</p>
+                       </div>
+                    </div>
+                    <Link to="/admin" className="text-sm font-bold text-red-600 hover:underline bg-white px-4 py-2 rounded-lg shadow-sm border border-red-100">Review Catalog</Link>
+                </div>
+            )}
             
             <div className="space-y-8">
                 {orders.map(order => {
@@ -92,7 +132,7 @@ const ManageOrders = () => {
                                     <p className="text-sm text-gray-500 mt-1">{order.email} | {order.name}</p>
                                 </div>
                                 <div className="text-right flex flex-col items-end">
-                                    <p className="text-sm font-semibold text-gray-600">Total: ${order.totalPrice}</p>
+                                    <p className="text-sm font-semibold text-gray-600">Total: {formatCurrency(order.totalPrice)}</p>
                                     <p className="text-xs text-gray-400 mt-1">{new Date(order.createdAt).toLocaleDateString()}</p>
                                     {order.cancelRequest?.requested && (
                                         <button 
@@ -130,6 +170,18 @@ const ManageOrders = () => {
                                                         {book.inventory?.binLocation && (
                                                             <span className="text-[11px] bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded shadow-sm font-semibold">
                                                                 Shelf: {book.inventory.binLocation}
+                                                            </span>
+                                                        )}
+                                                        {book.inventory?.inHouseQuantity !== undefined && book.inventory?.inHouseQuantity < 5 && (
+                                                            <span className="text-[11px] bg-red-100 border border-red-200 text-red-700 px-2 py-0.5 rounded shadow-sm font-bold flex items-center gap-1 animate-pulse">
+                                                                <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                                                CRITICAL: {book.inventory.inHouseQuantity} LEFT
+                                                            </span>
+                                                        )}
+                                                        {book.inventory?.inHouseQuantity !== undefined && book.inventory?.inHouseQuantity >= 5 && book.inventory?.inHouseQuantity < 10 && (
+                                                            <span className="text-[11px] bg-amber-50 border border-amber-200 text-amber-700 px-2 py-0.5 rounded shadow-sm font-bold flex items-center gap-1">
+                                                                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                                                                LOW STOCK: {book.inventory.inHouseQuantity}
                                                             </span>
                                                         )}
                                                     </div>

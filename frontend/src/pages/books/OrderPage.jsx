@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useGetOrdersByEmailQuery } from '../../redux/features/orders/ordersApi'
 import { useAuth } from '../../context/AuthContext'
 import { MdReceipt, MdInventory, MdLocalShipping, MdCheckCircle, MdHome, MdHistory, MdCancel } from 'react-icons/md'
+import formatCurrency from '../../utils/formatCurrency'
 
 const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery']
 
@@ -53,7 +54,7 @@ const OrderPage = () => {
                                     </div>
                                     <div className="sm:text-right bg-gray-50 p-4 rounded-xl border border-gray-100">
                                         <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Order Total</p>
-                                        <p className="text-2xl font-bold text-gray-800">${order.totalPrice}</p>
+                                        <p className="text-2xl font-bold text-gray-800">{formatCurrency(order.totalPrice)}</p>
                                     </div>
                                     {order.cancelOrder ? (
                                         <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg self-center">
