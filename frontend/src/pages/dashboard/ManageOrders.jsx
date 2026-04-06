@@ -6,15 +6,8 @@ import { MdReceipt, MdInventory, MdLocalShipping, MdCheckCircle, MdHome, MdHisto
 import formatCurrency from '../../utils/formatCurrency'
 import { Link } from 'react-router-dom'
 
-const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery']
-
-const STAGE_ICONS = [
-    <MdReceipt />,
-    <MdInventory />,
-    <MdHistory />,
-    <MdLocalShipping />,
-    <MdHome />
-]
+const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery', 'Delivered']
+const STAGE_ICONS = [<MdReceipt />, <MdInventory />, <MdHistory />, <MdLocalShipping />, <MdHome />, <MdCheckCircle />]
 
 const ManageOrders = () => {
     const { data: orders = [], isLoading, error, refetch } = useGetAllOrdersQuery()
@@ -213,7 +206,7 @@ const ManageOrders = () => {
                                         const isActive = index === currentIndex;
                                         
                                         return (
-                                            <div key={stage} className="flex flex-col items-center" style={{ width: '20%' }}>
+                                            <div key={stage} className="flex flex-col items-center" style={{ width: '16.66%' }}>
                                                 {/* Circle Marker */}
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm transition-colors duration-300 ${isCompleted ? 'bg-purple-600 shadow-md shadow-purple-200' : 'bg-gray-300'}`}>
                                                     {isCompleted ? <MdCheckCircle /> : <span className="w-3 h-3 bg-white rounded-full opacity-60"></span>}

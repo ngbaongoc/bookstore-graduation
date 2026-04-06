@@ -30,7 +30,6 @@ const Navbar = () => {
     ];
 
     const userNavigation = [
-        ...(isAdmin ? [{ name: "Dashboard", href: "/admin" }] : []),
         { name: "My Orders", href: "/orders" },
         { name: "Cart Page", href: "/cart" },
         ...(currentUser ? [{ name: "Settings", href: "/settings" }] : []),

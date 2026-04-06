@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema({
     ],
     status: {
         type: String,
-        enum: ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery'],
+        enum: ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery', 'Delivered'],
         default: 'Pending',
     },
     stageDates: {
@@ -50,6 +50,7 @@ const orderSchema = new mongoose.Schema({
         'Ready to pick up': { type: Date, default: null },
         'Picked up': { type: Date, default: null },
         Delivery: { type: Date, default: null },
+        Delivered: { type: Date, default: null },
     },
     reminderSent: {
         type: Boolean,

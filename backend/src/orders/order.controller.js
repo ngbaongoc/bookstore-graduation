@@ -1,7 +1,7 @@
 const Order = require("./order.model");
 const User = require("../users/user.model");
 const Book = require("../books/book.model");
-const { placeOrder } = require("../inventory/inventory.controller");
+const { placeOrder, decreaseReservedStock } = require("../inventory/inventory.controller");
 
 const createOrder = async (req, res) => {
     try {
@@ -85,7 +85,7 @@ const updateOrderStatus = async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
         
-        const validStatuses = ['pending', 'Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery'];
+        const validStatuses = ['pending', 'Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery', 'Delivered'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ message: "Invalid status value" });
         }
@@ -95,6 +95,14 @@ const updateOrderStatus = async (req, res) => {
         // Record the date this specific stage was achieved
         const stageFieldName = `stageDates.${status}`;
         updateData[stageFieldName] = new Date();
+
+        // If moving to 'Delivery', decrease reserved quantity from fulfillment
+        if (status === 'Delivery') {
+            const order = await Order.findById(id);
+            if (order && order.status !== 'Delivery' && order.status !== 'Delivered') {
+                await decreaseReservedStock(order.productIds);
+            }
+        }
 
         const updatedOrder = await Order.findByIdAndUpdate(
             id,
@@ -122,7 +130,9 @@ const requestCancelOrder = async (req, res) => {
         const order = await Order.findById(id);
         if (!order) return res.status(404).json({ message: "Order not found" });
         if (order.cancelOrder) return res.status(400).json({ message: "Order is already cancelled" });
-        if (order.status === 'Delivery') return res.status(400).json({ message: "Cannot cancel a delivered order" });
+        if (['Delivery', 'Delivered'].includes(order.status)) {
+            return res.status(400).json({ message: "Cannot cancel a delivered order" });
+        }
 
         order.cancelRequest = { requested: true, reason, requestedAt: new Date(), status: 'pending' };
         await order.save();
@@ -139,14 +149,22 @@ const approveCancelOrder = async (req, res) => {
         const order = await Order.findById(id);
         if (!order) return res.status(404).json({ message: "Order not found" });
 
+        if (['Delivery', 'Delivered'].includes(order.status)) {
+            return res.status(400).json({ message: "Cannot approve cancellation for a delivered order. Inventory has already been finalized." });
+        }
+
         // Rollback inventory: move reserved back to inHouse for each product
         for (const item of order.productIds) {
-            await Book.findByIdAndUpdate(item.productId, {
-                $inc: {
-                    "inventory.reservedQuantity": -item.quantity,
-                    "inventory.inHouseQuantity": item.quantity,
+            // Ensure reservedQuantity never drops below 0
+            await Book.findOneAndUpdate(
+                { _id: item.productId, "inventory.reservedQuantity": { $gte: item.quantity } },
+                { 
+                    $inc: { 
+                        "inventory.reservedQuantity": -item.quantity,
+                        "inventory.inHouseQuantity": item.quantity,
+                    }
                 }
-            });
+            );
         }
 
         order.cancelOrder = true;

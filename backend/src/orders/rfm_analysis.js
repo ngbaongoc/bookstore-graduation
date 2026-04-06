@@ -7,8 +7,8 @@ const getRFMAnalysis = async () => {
     const rawData = await Order.aggregate([
         {
             $match: {
-                status: 'Delivery',
-                'stageDates.Delivery': { $ne: null }
+                status: 'Delivered',
+                'stageDates.Delivered': { $ne: null }
             }
         },
         {
@@ -16,7 +16,7 @@ const getRFMAnalysis = async () => {
                 _id: "$userId",
                 monetary: { $sum: "$totalPrice" },
                 frequency: { $count: {} },
-                lastOrderDate: { $max: "$stageDates.Delivery" }
+                lastOrderDate: { $max: "$stageDates.Delivered" }
             }
         },
         {

@@ -83,8 +83,29 @@ const getAlerts = async (req, res) => {
   }
 };
 
+const decreaseReservedStock = async (productIds) => {
+  try {
+    for (const item of productIds) {
+      // Ensure reservedQuantity never drops below 0 by adding a guard in the query
+      await Book.findOneAndUpdate(
+        { _id: item.productId, "inventory.reservedQuantity": { $gte: item.quantity } },
+        { $inc: { "inventory.reservedQuantity": -item.quantity } }
+      );
+      
+      // Fallback: If for some reason the above didn't match (already low), 
+      // we ensure it's at least 0 and not negative if we were to force it.
+      // But the $gte guard is the preferred way to prevent underflow.
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Decrease Reserved Stock Error:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   placeOrder,
   adjustStock,
-  getAlerts
+  getAlerts,
+  decreaseReservedStock
 };

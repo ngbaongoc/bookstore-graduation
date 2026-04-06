@@ -6,8 +6,8 @@ import { MdReceipt, MdInventory, MdLocalShipping, MdCheckCircle, MdHome, MdHisto
 import formatCurrency from '../../utils/formatCurrency'
 import Swal from 'sweetalert2'
 
-const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery']
-const STAGE_ICONS = [<MdReceipt />, <MdInventory />, <MdHistory />, <MdLocalShipping />, <MdHome />]
+const STAGES = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery', 'Delivered']
+const STAGE_ICONS = [<MdReceipt />, <MdInventory />, <MdHistory />, <MdLocalShipping />, <MdHome />, <MdCheckCircle />]
 
 const CANCEL_REASONS = [
     'Changed my mind',
@@ -183,7 +183,7 @@ const OrderDetail = () => {
                                 const isCompleted = i <= currentIndex;
                                 const isActive = i === currentIndex;
                                 return (
-                                    <div key={stage} className="flex flex-col items-center" style={{ width: '20%' }}>
+                                    <div key={stage} className="flex flex-col items-center" style={{ width: '16.66%' }}>
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg transition-colors duration-500 shadow-sm ${isCompleted ? 'bg-purple-600 shadow-purple-200 ring-4 ring-purple-50' : 'bg-gray-200'}`}>
                                             {isCompleted ? <MdCheckCircle className="text-xl" /> : <span className="w-3 h-3 bg-white rounded-full opacity-60"></span>}
                                         </div>

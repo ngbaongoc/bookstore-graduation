@@ -102,7 +102,7 @@ const getUsers = async (req, res) => {
 
         // 1. Gather all users' favorite genre by finding the most frequently purchased category
         const genreAggregation = await Order.aggregate([
-            { $match: { status: 'Delivery' } },
+            { $match: { status: 'Delivered' } },
             { $unwind: "$productIds" },
             {
                 $lookup: {
