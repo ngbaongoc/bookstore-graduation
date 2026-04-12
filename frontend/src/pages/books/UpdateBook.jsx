@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useFetchBookByIdQuery, useUpdateBookMutation } from '../../redux/features/books/booksApi'
 import { useForm } from "react-hook-form"
 import { MdArrowBack, MdCloudUpload } from 'react-icons/md'
+import getBaseUrl from '../../utils/baseURL'
 
 const UpdateBook = () => {
     const { id } = useParams()
@@ -24,7 +25,7 @@ const UpdateBook = () => {
             setValue('description', book.description)
             
             if (book.thumbnail) {
-                setThumbnailPreview(book.thumbnail.startsWith('http') ? book.thumbnail : `http://localhost:5000${book.thumbnail}`)
+                setThumbnailPreview(book.thumbnail.startsWith('http') ? book.thumbnail : `${getBaseUrl()}${book.thumbnail}`)
                 if (!book.thumbnail.startsWith('http')) {
                     setUploadedImagePath(book.thumbnail)
                 }
@@ -40,7 +41,7 @@ const UpdateBook = () => {
         formData.append('coverImage', file)
 
         try {
-            const response = await fetch('http://localhost:5000/api/upload', {
+            const response = await fetch(`${getBaseUrl()}/api/upload`, {
                 method: 'POST',
                 body: formData,
             })
@@ -51,7 +52,7 @@ const UpdateBook = () => {
 
             const data = await response.json()
             setUploadedImagePath(data.filePath)
-            setThumbnailPreview(`http://localhost:5000${data.filePath}`)
+            setThumbnailPreview(`${getBaseUrl()}${data.filePath}`)
         } catch (error) {
             alert('Image upload failed: ' + error.message)
         }

@@ -1,4 +1,4 @@
-const API_SERVER_URL = 'http://localhost:5000'
+const API_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
 export const getImgUrl = (thumbnail) => {
     if (!thumbnail) return ''

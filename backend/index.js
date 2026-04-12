@@ -40,8 +40,6 @@ app.use("/api/blogs", blogRoutes)
 app.use("/api/inventory", inventoryRoutes)
 app.use("/api/stats", statsRoutes)
 
-initAbandonedCartCron();
-
 async function main() {
     await mongoose.connect(process.env.DB_URL);
     app.get("/", (req, res) => {
@@ -49,7 +47,10 @@ async function main() {
     });
 }
 
-main().then(() => console.log("MongoDB connected successfully!")).catch(err => console.log(err));
+main().then(() => {
+    console.log("MongoDB connected successfully!");
+    initAbandonedCartCron();
+}).catch(err => console.log(err));
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
