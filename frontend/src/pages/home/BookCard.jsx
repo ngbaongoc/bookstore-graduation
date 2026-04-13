@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import { addToCart } from '../../redux/features/cart/cartSlice'
 import { addToWishlist } from '../../redux/features/wishlist/wishlistSlice'
 import { FaRegHeart } from "react-icons/fa";
+import formatCurrency from '../../utils/formatCurrency'
 
 const BookCard = ({ book }) => {
     const dispatch = useDispatch();
@@ -49,9 +50,9 @@ const BookCard = ({ book }) => {
 
                 <div>
                     <p className="font-medium mb-4 text-gray-800">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}
+                        {formatCurrency(price)}
                         {oldPrice && <span className="line-through font-normal text-gray-400 ml-2">
-                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(oldPrice)}
+                            {formatCurrency(oldPrice)}
                         </span>}
                     </p>
                     <button

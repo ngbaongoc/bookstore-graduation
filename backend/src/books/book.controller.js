@@ -13,13 +13,14 @@ const postABook = async (req, res) => {
 
 // get all books
 const getAllBooks = async (req, res) => {
+    console.log("Fetching all books...");
     try {
         const books = await Book.find().sort({ createdAt: -1 });
         res.status(200).send(books)
 
     } catch (error) {
-        console.error("Error fetching books", error);
-        res.status(500).send({ message: "Failed to fetch books" })
+        console.error("Error fetching books", error.message, error.stack);
+        res.status(500).send({ message: "Failed to fetch books", error: error.message })
     }
 }
 
@@ -83,8 +84,7 @@ const addReview = async (req, res) => {
             return res.status(404).send({ message: "Book not Found!" });
         }
 
-        // Update reviews and stats
-        book.review_text.push(review);
+        // Update stats
 
         // Calculate new average score
         const totalScore = (book.average_review_score * book.number_of_review) + Number(score);

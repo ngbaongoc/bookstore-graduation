@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { getImgUrl } from '../../utils/getImgUrl';
 import { clearCart, removeFromCart, updateQuantity } from '../../redux/features/cart/cartSlice';
+import formatCurrency from '../../utils/formatCurrency';
+import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiArrowLeft } from 'react-icons/fi'
 
 const CartPage = () => {
     const cartItems = useSelector(state => state.cart.cartItems);
     const dispatch = useDispatch();
 
     const totalPrice = cartItems.reduce((acc, item) => acc + (item.newPrice || item.price) * (item.quantity || 1), 0).toFixed(0);
+    const totalQuantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
     const handleRemoveFromCart = (product) => {
         dispatch(removeFromCart(product));
@@ -22,114 +25,127 @@ const CartPage = () => {
         dispatch(updateQuantity({ id, quantity: currentQty + amount }));
     }
 
+    if (cartItems.length === 0) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                    <FiShoppingBag className="text-4xl text-gray-400" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Your cart is empty</h2>
+                <p className="text-gray-500 mb-8">Looks like you haven't added any books yet.</p>
+                <Link to="/" className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-xl transition-colors">
+                    Browse Books
+                </Link>
+            </div>
+        )
+    }
+
     return (
-        <div className="flex mt-12 h-full flex-col overflow-hidden bg-white shadow-xl">
-            <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
-                <div className="flex items-start justify-between">
-                    <h2 className="text-lg font-medium text-gray-900">Shopping cart</h2>
-                    <div className="ml-3 flex h-7 items-center ">
-                        <button
-                            type="button"
-                            onClick={handleClearCart}
-                            className="relative -m-2 py-1 px-2 bg-red-500 text-white rounded-md hover:bg-secondary transition-all duration-200  "
-                        >
-                            <span className="">Clear Cart</span>
-                        </button>
-                    </div>
+        <div className="max-w-4xl mx-auto px-4 py-8">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-800">Shopping Cart</h1>
+                    <p className="text-sm text-gray-500 mt-1">{totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}</p>
                 </div>
-
-                <div className="mt-8">
-                    <div className="flow-root">
-                        {
-                            cartItems.length > 0 ? (
-                                <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                    {
-                                        cartItems.map((product) => (
-                                            <li key={product?._id} className="flex py-6">
-                                                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                    <Link to={`/books/${product?._id}`}>
-                                                        <img
-                                                            src={`${getImgUrl(product?.coverImage || product?.thumbnail)}`}
-                                                            alt={product?.title}
-                                                            className="h-full w-full object-cover object-center hover:scale-105 transition-all duration-200"
-                                                        />
-                                                    </Link>
-                                                </div>
-
-                                                <div className="ml-4 flex flex-1 flex-col">
-                                                    <div>
-                                                        <div className="flex flex-wrap justify-between text-base font-medium text-gray-900">
-                                                            <h3>
-                                                                <Link to={`/books/${product?._id}`} className="hover:text-blue-600">
-                                                                    {product?.title}
-                                                                </Link>
-                                                            </h3>
-                                                            <p className="ml-4">
-                                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product?.newPrice || product?.price)}
-                                                            </p>
-                                                        </div>
-                                                        <p className="mt-1 text-sm text-gray-500 capitalize"><strong>Category: </strong>{product?.category}</p>
-                                                    </div>
-                                                    <div className="flex flex-1 flex-wrap items-end justify-between text-sm">
-                                                        <div className="flex items-center gap-2">
-                                                            <strong>Qty:</strong>
-                                                            <button
-                                                                onClick={() => handleUpdateQuantity(product._id, product.quantity || 1, -1)}
-                                                                className="px-2 py-1 bg-gray-200 rounded-md hover:bg-gray-300">-</button>
-                                                            <span>{product.quantity || 1}</span>
-                                                            <button
-                                                                onClick={() => handleUpdateQuantity(product._id, product.quantity || 1, 1)}
-                                                                className="px-2 py-1 bg-gray-200 rounded-md hover:bg-gray-300">+</button>
-                                                        </div>
-
-                                                        <div className="flex">
-                                                            <button
-                                                                onClick={() => handleRemoveFromCart(product)}
-                                                                type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                                                Remove
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        ))
-                                    }
-                                </ul>
-                            ) : (<p className="text-center py-10">No product found in cart!</p>)
-                        }
-                    </div>
-                </div>
+                <button
+                    onClick={handleClearCart}
+                    className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1.5 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+                >
+                    <FiTrash2 className="text-sm" />
+                    Clear Cart
+                </button>
             </div>
 
-            <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-                <div className="flex justify-between text-base font-medium text-gray-900">
-                    <p>Subtotal</p>
-                    <p>
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}
-                    </p>
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Cart Items */}
+                <div className="lg:col-span-2 space-y-4">
+                    {cartItems.map((product) => (
+                        <div key={product?._id} className="bg-white rounded-2xl border border-gray-100 p-4 flex gap-4 hover:shadow-md transition-shadow">
+                            <Link to={`/books/${product?._id}`} className="flex-shrink-0">
+                                <img
+                                    src={`${getImgUrl(product?.coverImage || product?.thumbnail)}`}
+                                    alt={product?.title}
+                                    className="w-24 h-32 object-cover rounded-xl hover:scale-105 transition-transform duration-200"
+                                />
+                            </Link>
+
+                            <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-start gap-2">
+                                    <div>
+                                        <Link to={`/books/${product?._id}`} className="font-bold text-gray-800 hover:text-[#008080] transition-colors line-clamp-1">
+                                            {product?.title}
+                                        </Link>
+                                        <p className="text-xs text-gray-400 mt-1 capitalize">{product?.category}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleRemoveFromCart(product)}
+                                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                    >
+                                        <FiTrash2 />
+                                    </button>
+                                </div>
+
+                                <div className="flex items-end justify-between mt-4">
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            onClick={() => handleUpdateQuantity(product._id, product.quantity || 1, -1)}
+                                            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                        >
+                                            <FiMinus className="text-sm" />
+                                        </button>
+                                        <span className="w-10 text-center font-medium text-gray-800">{product.quantity || 1}</span>
+                                        <button
+                                            onClick={() => handleUpdateQuantity(product._id, product.quantity || 1, 1)}
+                                            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                        >
+                                            <FiPlus className="text-sm" />
+                                        </button>
+                                    </div>
+                                    <p className="font-bold text-gray-800 text-lg">
+                                        {formatCurrency((product?.newPrice || product?.price) * (product.quantity || 1))}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
-                <div className="mt-6">
-                    <Link
-                        to="/checkout"
-                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                    >
-                        Checkout
-                    </Link>
-                </div>
-                <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
-                    <p>
-                        or
-                        <Link to="/">
-                            <button
-                                type="button"
-                                className="font-medium text-indigo-600 hover:text-indigo-500 ml-1"
-                            >
-                                Continue Shopping
-                                <span aria-hidden="true"> &rarr;</span>
-                            </button>
+
+                {/* Order Summary */}
+                <div className="lg:col-span-1">
+                    <div className="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24">
+                        <h3 className="font-bold text-gray-800 mb-4">Order Summary</h3>
+
+                        <div className="space-y-3 text-sm">
+                            <div className="flex justify-between text-gray-500">
+                                <span>Subtotal ({totalQuantity} items)</span>
+                                <span>{formatCurrency(totalPrice)}</span>
+                            </div>
+                            <div className="flex justify-between text-gray-500">
+                                <span>Shipping</span>
+                                <span className="text-[#008080] font-medium">Free</span>
+                            </div>
+                            <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-800 text-base">
+                                <span>Total</span>
+                                <span className="text-[#008080]">{formatCurrency(totalPrice)}</span>
+                            </div>
+                        </div>
+
+                        <Link
+                            to="/checkout"
+                            className="mt-6 w-full bg-[#008080] hover:bg-[#006666] text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+                        >
+                            Proceed to Checkout
                         </Link>
-                    </p>
+
+                        <Link
+                            to="/"
+                            className="mt-3 w-full text-gray-500 hover:text-[#008080] font-medium py-2 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
+                        >
+                            <FiArrowLeft className="text-sm" />
+                            Continue Shopping
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

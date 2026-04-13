@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import getBaseUrl from '../../../utils/baseURL'
 
 const booksApi = createApi({
     reducerPath: 'booksApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/books' }),
+    baseQuery: fetchBaseQuery({ baseUrl: `${getBaseUrl()}/api/books` }),
     tagTypes: ['Books'],
     endpoints: (builder) => ({
         fetchAllBooks: builder.query({

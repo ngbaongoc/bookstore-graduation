@@ -1,22 +1,16 @@
-
-/*The structure that is shared across all pages of the bookstore*/
-
-
 import { Outlet } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar.jsx'
-import Banner from './pages/home/Banner.jsx'
+import Footer from './components/Footer.jsx'
+
 function App() {
-
-
   return (
     <>
       <Navbar />
-      <main className="min-h-screen max-w-screen-2xl mx-auto px-4 py-6 font-primary">
+      <main className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-primary bg-white">
         <Outlet />
       </main>
-
-      <footer> Footer </footer>
+      <Footer />
     </>
   )
 }

@@ -31,9 +31,4 @@ router.post('/upload', upload.single('coverImage'), (req, res) => {
     res.json({ filePath });
 });
 
-// Handle errors for unmatched routes in this router
-router.use((req, res) => {
-    res.status(404).json({ error: 'Upload route not found' });
-});
-
 module.exports = router;
