@@ -46,7 +46,7 @@ const initAbandonedCartCron = () => {
 
         try {
             const abandonedOrders = await Order.find({
-                status: 'pending',
+                status: 'Pending',
                 reminderSent: false,
                 createdAt: { $lt: oneDayAgo }
             });

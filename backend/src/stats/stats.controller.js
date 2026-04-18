@@ -66,11 +66,19 @@ const getDashboardStats = async (req, res) => {
         // 2. Top 5 Most Sold Books
         const topBooks = await Order.aggregate([
             { $match: dateFilter },
-            { $unwind: "$productIds" },
+            {
+                $lookup: {
+                    from: "orderitems",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "items"
+                }
+            },
+            { $unwind: "$items" },
             {
                 $group: {
-                    _id: "$productIds.productId",
-                    totalUnits: { $sum: "$productIds.quantity" }
+                    _id: "$items.bookId",
+                    totalUnits: { $sum: "$items.quantity" }
                 }
             },
             { $sort: { totalUnits: -1 } },
@@ -97,7 +105,7 @@ const getDashboardStats = async (req, res) => {
             { $match: dateFilter },
             {
                 $group: {
-                    _id: { $ifNull: ["$shippingAddress.city", "Unknown"] },
+                    _id: { $ifNull: ["$shippingCity", "Unknown"] },
                     count: { $sum: 1 }
                 }
             },
@@ -114,7 +122,7 @@ const getDashboardStats = async (req, res) => {
             { $match: cancelFilter },
             {
                 $group: {
-                    _id: { $ifNull: ["$cancellationReason", "Other"] },
+                    _id: { $ifNull: ["$cancelReason", "Other"] },
                     count: { $sum: 1 }
                 }
             }

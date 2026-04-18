@@ -13,45 +13,26 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    shippingAddress: {
-        street: String,
-        city: String,
-        country: String,
-        state: String,
-        zipcode: String,
-    },
+    shippingStreet: String,
+    shippingCity: String,
+    shippingCountry: String,
+    shippingState: String,
+    shippingZipcode: String,
     totalPrice: {
         type: Number,
         required: true,
     },
-    productIds: [
-        {
-            productId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Book',
-                required: true,
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1,
-                default: 1,
-            }
-        }
-    ],
     status: {
         type: String,
         enum: ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery', 'Delivered'],
         default: 'Pending',
     },
-    stageDates: {
-        Pending: { type: Date, default: Date.now },
-        Processing: { type: Date, default: null },
-        'Ready to pick up': { type: Date, default: null },
-        'Picked up': { type: Date, default: null },
-        Delivery: { type: Date, default: null },
-        Delivered: { type: Date, default: null },
-    },
+    stagePending: { type: Date, default: Date.now },
+    stageProcessing: { type: Date, default: null },
+    stageReadyToPickUp: { type: Date, default: null },
+    stagePickedUp: { type: Date, default: null },
+    stageDelivery: { type: Date, default: null },
+    stageDelivered: { type: Date, default: null },
     reminderSent: {
         type: Boolean,
         default: false,
@@ -60,16 +41,11 @@ const orderSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    cancelRequest: {
-        requested: { type: Boolean, default: false },
-        reason: { type: String, default: null },
-        requestedAt: { type: Date, default: null },
-        status: { type: String, enum: ['pending', 'approved', 'disapproved'], default: 'pending' },
-    },
-    cancellationReason: {
-        type: String,
-        default: null,
-    },
+    cancelRequested: { type: Boolean, default: false },
+    cancelReason: { type: String, default: null },
+    cancelRequestedAt: { type: Date, default: null },
+    cancelStatus: { type: String, enum: ['pending', 'approved', 'disapproved'], default: 'pending' },
+
     userId: {
         type: String,
         required: true,

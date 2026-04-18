@@ -25,7 +25,7 @@ import UserSettings from "../pages/dashboard/UserSettings";
 import ComposeEmail from "../pages/dashboard/ComposeEmail";
 import ManageOrders from "../pages/dashboard/ManageOrders";
 import UserOrders from "../pages/dashboard/UserOrders";
-import SalesIntelligence from "../pages/dashboard/SalesIntelligence";
+import IntelligenceDashboard from "../pages/dashboard/intelligence/IntelligenceDashboard";
 
 import React from 'react';
 
@@ -89,7 +89,7 @@ const router = createBrowserRouter([
             { path: "users/:userId/orders", element: <UserOrders /> },
             { path: "compose-email", element: <ComposeEmail /> },
             { path: "orders", element: <ManageOrders /> },
-            { path: "sales", element: <SalesIntelligence /> },
+            { path: "sales", element: <IntelligenceDashboard /> },
         ]
     },
 ]);

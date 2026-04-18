@@ -140,7 +140,7 @@ const SingleBook = () => {
                 </div>
             </div>
 
-            {/* Review Section */}
+            {/* Customer Reviews */}
             <div className="mt-12 border-t pt-8">
                 <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -204,6 +204,38 @@ const SingleBook = () => {
                     )}
                 </div>
             </div>
+
+            {/* Association Rule Recommendations */}
+            {book?.recommendedBooks?.length > 0 && (
+                <div className="mt-12 border-t pt-8">
+                    <h2 className="text-2xl font-bold mb-2">Customers Who Bought This Also Bought</h2>
+                    <p className="text-sm text-gray-400 mb-6">Powered by Market Basket Analysis</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {book.recommendedBooks.map((rec) => (
+                            <Link
+                                key={rec._id}
+                                to={`/books/${rec._id}`}
+                                className="group bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden"
+                            >
+                                <div className="aspect-[3/4] overflow-hidden bg-gray-50">
+                                    <img
+                                        src={getImgUrl(rec.thumbnail)}
+                                        alt={rec.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                </div>
+                                <div className="p-3">
+                                    <p className="font-bold text-sm text-gray-800 truncate">{rec.title}</p>
+                                    <p className="text-xs text-gray-500 truncate">{rec.author}</p>
+                                    <p className="text-sm font-bold text-emerald-600 mt-1">
+                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(rec.price)}
+                                    </p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

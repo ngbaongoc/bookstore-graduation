@@ -1,0 +1,4 @@
+isbn,title,author,category,thumbnail,description,published_year,num_pages,price,inHouseQuantity,binLocation
+978-0134685991,Effective Java,Joshua Bloch,Programming,https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=200&auto=format&fit=crop,A must-have book for Java developers.,2017,412,45.00,20,A1-01
+978-0201616223,The Pragmatic Programmer,Andrew Hunt,Programming,https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=200&auto=format&fit=crop,Your journey to absolute coding mastery.,1999,352,40.00,15,A2-05
+978-0321714114,C++ Primer,Stanley Lippman,Programming,https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200&auto=format&fit=crop,An exhaustive introduction and deep dive to C++ software architecture.,2012,976,55.00,5,B1-02

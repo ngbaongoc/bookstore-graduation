@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { adminLogin, registerAdmin, getRFMReport } = require('./admin.controller');
+const { getAdvancedIntelligence } = require('./intelligence.controller');
+
+// Advanced Sales Intelligence
+router.get('/intelligence', getAdvancedIntelligence);
 
 // Admin authentication
 router.post('/login', adminLogin);

@@ -1,5 +1,6 @@
 const Book = require('../books/book.model');
 const Order = require('../orders/order.model');
+const Inventory = require('./inventory.model');
 
 // Step 1: Manual Stock adjustment
 const adjustStock = async (req, res) => {
@@ -7,21 +8,45 @@ const adjustStock = async (req, res) => {
     const { id } = req.params;
     const { quantityToAdd } = req.body;
 
-    const updatedBook = await Book.findByIdAndUpdate(
-      id,
+    const updatedInventory = await Inventory.findOneAndUpdate(
+      { bookId: id },
       {
-        $inc: { "inventory.inHouseQuantity": quantityToAdd }
+        $inc: { inHouseQuantity: quantityToAdd }
       },
       { new: true }
     );
 
-    if (!updatedBook) {
-      return res.status(404).json({ message: "Book not found" });
+    if (!updatedInventory) {
+      return res.status(404).json({ message: "Inventory not found for this book" });
     }
 
-    res.status(200).json({ success: true, message: `Added ${quantityToAdd} units to shelf`, book: updatedBook });
+    res.status(200).json({ success: true, message: `Added ${quantityToAdd} units to shelf`, inventory: updatedInventory });
   } catch (error) {
     console.error("Adjust Stock Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const adjustBinLocation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newBinLocation } = req.body;
+
+    const updatedInventory = await Inventory.findOneAndUpdate(
+      { bookId: id },
+      {
+        $set: { binLocation: newBinLocation }
+      },
+      { new: true }
+    );
+
+    if (!updatedInventory) {
+      return res.status(404).json({ message: "Inventory not found for this book" });
+    }
+
+    res.status(200).json({ success: true, message: `Moved to new bin ${newBinLocation}`, inventory: updatedInventory });
+  } catch (error) {
+    console.error("Adjust Bin Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -30,29 +55,29 @@ const adjustStock = async (req, res) => {
 const placeOrder = async (bookId, quantityRequested) => {
   try {
     // 1. ATOMIC UPDATE: Decrease shelf stock AND Increase reserved stock
-    const updatedBook = await Book.findOneAndUpdate(
+    const updatedInventory = await Inventory.findOneAndUpdate(
       { 
-        _id: bookId, 
-        "inventory.inHouseQuantity": { $gte: quantityRequested } 
+        bookId: bookId, 
+        inHouseQuantity: { $gte: quantityRequested } 
       },
       { 
         $inc: { 
-          "inventory.inHouseQuantity": -quantityRequested, 
-          "inventory.reservedQuantity": quantityRequested 
+          inHouseQuantity: -quantityRequested, 
+          reservedQuantity: quantityRequested 
         } 
       },
       { new: true }
     );
 
-    if (!updatedBook) {
+    if (!updatedInventory) {
       return { success: false, message: "Insufficient stock on shelf." };
     }
 
     return { 
       success: true, 
       message: "Books locked for packing!", 
-      remainingOnShelf: updatedBook.inventory.inHouseQuantity,
-      nowReserved: updatedBook.inventory.reservedQuantity 
+      remainingOnShelf: updatedInventory.inHouseQuantity,
+      nowReserved: updatedInventory.reservedQuantity 
     };
 
   } catch (error) {
@@ -66,9 +91,11 @@ const getAlerts = async (req, res) => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const newOrdersCount = await Order.countDocuments({ createdAt: { $gte: oneDayAgo } });
     
-    const lowStockBooks = await Book.find({ "inventory.inHouseQuantity": { $lt: 10 } }).select('title inventory.inHouseQuantity');
+    // Find low stock directly from Inventory
+    const lowStockInventories = await Inventory.find({ inHouseQuantity: { $lt: 10 } }).populate('bookId', 'title');
+    const lowStockBooks = lowStockInventories.map(inv => ({ _id: inv.bookId._id, title: inv.bookId.title, inventory: { inHouseQuantity: inv.inHouseQuantity } }));
 
-    const cancelRequestsCount = await Order.countDocuments({ 'cancelRequest.requested': true, cancelOrder: { $ne: true } });
+    const cancelRequestsCount = await Order.countDocuments({ cancelRequested: true, cancelOrder: { $ne: true } });
     
     res.status(200).json({
       success: true,
@@ -87,9 +114,9 @@ const decreaseReservedStock = async (productIds) => {
   try {
     for (const item of productIds) {
       // Ensure reservedQuantity never drops below 0 by adding a guard in the query
-      await Book.findOneAndUpdate(
-        { _id: item.productId, "inventory.reservedQuantity": { $gte: item.quantity } },
-        { $inc: { "inventory.reservedQuantity": -item.quantity } }
+      await Inventory.findOneAndUpdate(
+        { bookId: item.productId, reservedQuantity: { $gte: item.quantity } },
+        { $inc: { reservedQuantity: -item.quantity } }
       );
       
       // Fallback: If for some reason the above didn't match (already low), 
@@ -106,6 +133,7 @@ const decreaseReservedStock = async (productIds) => {
 module.exports = {
   placeOrder,
   adjustStock,
+  adjustBinLocation,
   getAlerts,
   decreaseReservedStock
 };

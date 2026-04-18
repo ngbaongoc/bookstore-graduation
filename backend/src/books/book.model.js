@@ -45,12 +45,6 @@ const bookSchema = new mongoose.Schema({
   average_review_score: {
     type: Number,
     default: 0,
-  },
-  inventory: {
-    inHouseQuantity: { type: Number, default: 0, min: 0 },
-    reservedQuantity: { type: Number, default: 0, min: 0 },
-    binLocation: { type: String, default: "General Shelf" }, // Helps you find the book in your house
-    weightGrams: { type: Number, default: 500 } // Needed for 3PL shipping fees
   }
 }, {
   timestamps: true,

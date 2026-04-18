@@ -44,6 +44,8 @@ const AddBook = () => {
                 published_year: parseInt(data.published_year),
                 num_pages: parseInt(data.num_pages),
                 price: parseFloat(data.price),
+                inHouseQuantity: parseInt(data.inHouseQuantity) || 0,
+                binLocation: data.binLocation || "General Shelf",
                 isbn: data.isbn
             }
             await addBook(bookData).unwrap()
@@ -170,12 +172,32 @@ const AddBook = () => {
                             />
                         </div>
 
+                        <div className="w-full grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Pages</label>
+                                <input
+                                    type="number"
+                                    {...register('num_pages', { required: true })}
+                                    className="block w-full border border-gray-200 rounded-xl shadow-sm p-3.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">In-House Qty</label>
+                                <input
+                                    type="number"
+                                    {...register('inHouseQuantity')}
+                                    className="block w-full border border-gray-200 rounded-xl shadow-sm p-3.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all"
+                                    placeholder="0"
+                                />
+                            </div>
+                        </div>
+
                         <div className="w-full">
-                            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Number of Pages</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Bin Location</label>
                             <input
-                                type="number"
-                                {...register('num_pages', { required: true })}
+                                {...register('binLocation')}
                                 className="block w-full border border-gray-200 rounded-xl shadow-sm p-3.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all"
+                                placeholder="General Shelf"
                             />
                         </div>
                     </div>

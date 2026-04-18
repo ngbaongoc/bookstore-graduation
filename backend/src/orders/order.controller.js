@@ -1,43 +1,103 @@
 const Order = require("./order.model");
 const User = require("../users/user.model");
 const Book = require("../books/book.model");
+const OrderItem = require("./orderItem.model");
+const Inventory = require("../inventory/inventory.model");
 const { placeOrder, decreaseReservedStock } = require("../inventory/inventory.controller");
+
+// Helper function to format order back to nested shape
+const formatOrder = async (order) => {
+    const items = await OrderItem.find({ orderId: order._id }).populate('bookId').lean();
+    
+    // Reconstruct productIds structure
+    const productIds = items.map(item => ({
+        productId: item.bookId, // book object
+        quantity: item.quantity
+    }));
+
+    return {
+        ...order,
+        shippingAddress: {
+            street: order.shippingStreet,
+            city: order.shippingCity,
+            country: order.shippingCountry,
+            state: order.shippingState,
+            zipcode: order.shippingZipcode
+        },
+        stageDates: {
+            Pending: order.stagePending,
+            Processing: order.stageProcessing,
+            'Ready to pick up': order.stageReadyToPickUp,
+            'Picked up': order.stagePickedUp,
+            Delivery: order.stageDelivery,
+            Delivered: order.stageDelivered
+        },
+        cancelRequest: {
+            requested: order.cancelRequested,
+            reason: order.cancelReason,
+            requestedAt: order.cancelRequestedAt,
+            status: order.cancelStatus
+        },
+        productIds
+    };
+};
 
 const createOrder = async (req, res) => {
     try {
-        const { userId, productIds } = req.body;
+        const { userId, productIds, shippingAddress, ...otherData } = req.body;
 
-        // Verify user exists in MongoDB using the 6-digit userId string
         const user = await User.findOne({ userId });
         if (!user) {
-            console.warn(`Order attempt rejected: User with ID ${userId} not found.`);
             return res.status(403).json({ message: "Only registered users can place an order. Please complete your profile in Settings." });
         }
 
-        // Reserve inventory for each item (decrease inHouseQuantity, increase reservedQuantity)
         const reservedItems = [];
         for (const item of productIds) {
             const result = await placeOrder(item.productId, item.quantity);
             if (!result.success) {
-                // Rollback previously reserved items
+                // Rollback
                 for (const reserved of reservedItems) {
-                    await Book.findByIdAndUpdate(reserved.productId, {
-                        $inc: {
-                            "inventory.inHouseQuantity": reserved.quantity,
-                            "inventory.reservedQuantity": -reserved.quantity,
+                    await Inventory.findOneAndUpdate(
+                        { bookId: reserved.productId },
+                        {
+                            $inc: {
+                                inHouseQuantity: reserved.quantity,
+                                reservedQuantity: -reserved.quantity,
+                            }
                         }
-                    });
+                    );
                 }
-                return res.status(400).json({
-                    message: `Insufficient stock for one of the items. ${result.message}`
-                });
+                return res.status(400).json({ message: `Insufficient stock for one of the items. ${result.message}` });
             }
             reservedItems.push(item);
         }
 
-        const newOrder = new Order(req.body);
+        // Build flat order
+        const flatOrderData = {
+            ...otherData,
+            userId,
+            shippingStreet: shippingAddress?.street,
+            shippingCity: shippingAddress?.city,
+            shippingCountry: shippingAddress?.country,
+            shippingState: shippingAddress?.state,
+            shippingZipcode: shippingAddress?.zipcode,
+            stagePending: new Date(),
+        };
+
+        const newOrder = new Order(flatOrderData);
         const savedOrder = await newOrder.save();
-        res.status(200).json(savedOrder);
+
+        // Save order items
+        for (const item of productIds) {
+            await new OrderItem({
+                orderId: savedOrder._id,
+                bookId: item.productId,
+                quantity: item.quantity
+            }).save();
+        }
+
+        const formatted = await formatOrder(savedOrder.toObject());
+        res.status(200).json(formatted);
     } catch (error) {
         console.error("Error creating order", error);
         res.status(500).json({ message: "Failed to create order", error: error.message });
@@ -47,9 +107,11 @@ const createOrder = async (req, res) => {
 const getOrdersByEmail = async (req, res) => {
     try {
         const { email } = req.params;
-        const orders = await Order.find({ email }).populate('productIds.productId').sort({ createdAt: -1 });
+        const orders = await Order.find({ email }).sort({ createdAt: -1 }).lean();
         if (!orders) return res.status(404).json({ message: "Order not found" });
-        res.status(200).json(orders);
+        
+        const formattedOrders = await Promise.all(orders.map(o => formatOrder(o)));
+        res.status(200).json(formattedOrders);
     } catch (error) {
         console.error("Error fetching orders by email", error);
         res.status(500).json({ message: "Failed to fetch orders" });
@@ -59,11 +121,13 @@ const getOrdersByEmail = async (req, res) => {
 const getOrdersByUserId = async (req, res) => {
     try {
         const { userId } = req.params;
-        const orders = await Order.find({ userId }).populate('productIds.productId').sort({ createdAt: -1 });
+        const orders = await Order.find({ userId }).sort({ createdAt: -1 }).lean();
         if (!orders || orders.length === 0) {
             return res.status(404).json({ message: "No orders found for this user" });
         }
-        res.status(200).json(orders);
+        
+        const formattedOrders = await Promise.all(orders.map(o => formatOrder(o)));
+        res.status(200).json(formattedOrders);
     } catch (error) {
         console.error("Error fetching orders by userId", error);
         res.status(500).json({ message: "Failed to fetch orders" });
@@ -72,8 +136,9 @@ const getOrdersByUserId = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ cancelOrder: { $ne: true } }).populate('productIds.productId').sort({ createdAt: -1 });
-        res.status(200).json(orders);
+        const orders = await Order.find({ cancelOrder: { $ne: true } }).sort({ createdAt: -1 }).lean();
+        const formattedOrders = await Promise.all(orders.map(o => formatOrder(o)));
+        res.status(200).json(formattedOrders);
     } catch (error) {
         console.error("Error fetching all orders", error);
         res.status(500).json({ message: "Failed to fetch all orders" });
@@ -92,15 +157,23 @@ const updateOrderStatus = async (req, res) => {
 
         const updateData = { status };
         
-        // Record the date this specific stage was achieved
-        const stageFieldName = `stageDates.${status}`;
-        updateData[stageFieldName] = new Date();
+        const stageMap = {
+            'pending': 'stagePending',
+            'Pending': 'stagePending',
+            'Processing': 'stageProcessing',
+            'Ready to pick up': 'stageReadyToPickUp',
+            'Picked up': 'stagePickedUp',
+            'Delivery': 'stageDelivery',
+            'Delivered': 'stageDelivered'
+        };
+        updateData[stageMap[status]] = new Date();
 
-        // If moving to 'Delivery', decrease reserved quantity from fulfillment
         if (status === 'Delivery') {
             const order = await Order.findById(id);
             if (order && order.status !== 'Delivery' && order.status !== 'Delivered') {
-                await decreaseReservedStock(order.productIds);
+                const items = await OrderItem.find({ orderId: order._id }).lean();
+                const productIds = items.map(item => ({ productId: item.bookId, quantity: item.quantity }));
+                await decreaseReservedStock(productIds);
             }
         }
 
@@ -108,13 +181,14 @@ const updateOrderStatus = async (req, res) => {
             id,
             { $set: updateData },
             { new: true }
-        );
+        ).lean();
 
         if (!updatedOrder) {
             return res.status(404).json({ message: "Order not found" });
         }
 
-        res.status(200).json(updatedOrder);
+        const formatted = await formatOrder(updatedOrder);
+        res.status(200).json(formatted);
     } catch (error) {
         console.error("Error updating order status", error);
         res.status(500).json({ message: "Failed to update order status" });
@@ -134,9 +208,14 @@ const requestCancelOrder = async (req, res) => {
             return res.status(400).json({ message: "Cannot cancel a delivered order" });
         }
 
-        order.cancelRequest = { requested: true, reason, requestedAt: new Date(), status: 'pending' };
+        order.cancelRequested = true;
+        order.cancelReason = reason;
+        order.cancelRequestedAt = new Date();
+        order.cancelStatus = 'pending';
+        
         await order.save();
-        res.status(200).json({ message: "Cancel request submitted", order });
+        const formatted = await formatOrder(order.toObject());
+        res.status(200).json({ message: "Cancel request submitted", order: formatted });
     } catch (error) {
         console.error("Error requesting cancel", error);
         res.status(500).json({ message: "Failed to submit cancel request" });
@@ -153,26 +232,27 @@ const approveCancelOrder = async (req, res) => {
             return res.status(400).json({ message: "Cannot approve cancellation for a delivered order. Inventory has already been finalized." });
         }
 
-        // Rollback inventory: move reserved back to inHouse for each product
-        for (const item of order.productIds) {
-            // Ensure reservedQuantity never drops below 0
-            await Book.findOneAndUpdate(
-                { _id: item.productId, "inventory.reservedQuantity": { $gte: item.quantity } },
+        // Rollback inventory
+        const items = await OrderItem.find({ orderId: order._id }).lean();
+        for (const item of items) {
+            await Inventory.findOneAndUpdate(
+                { bookId: item.bookId, reservedQuantity: { $gte: item.quantity } },
                 { 
                     $inc: { 
-                        "inventory.reservedQuantity": -item.quantity,
-                        "inventory.inHouseQuantity": item.quantity,
+                        reservedQuantity: -item.quantity,
+                        inHouseQuantity: item.quantity,
                     }
                 }
             );
         }
 
         order.cancelOrder = true;
-        order.cancelRequest.requested = false;
-        order.cancelRequest.status = 'approved';
-        order.cancellationReason = order.cancelRequest.reason;
+        order.cancelRequested = false;
+        order.cancelStatus = 'approved';
         await order.save();
-        res.status(200).json({ message: "Order cancelled and inventory restored", order });
+        
+        const formatted = await formatOrder(order.toObject());
+        res.status(200).json({ message: "Order cancelled and inventory restored", order: formatted });
     } catch (error) {
         console.error("Error approving cancel", error);
         res.status(500).json({ message: "Failed to approve cancellation" });
@@ -185,10 +265,12 @@ const disapproveCancelOrder = async (req, res) => {
         const order = await Order.findById(id);
         if (!order) return res.status(404).json({ message: "Order not found" });
 
-        order.cancelRequest.requested = false;
-        order.cancelRequest.status = 'disapproved';
+        order.cancelRequested = false;
+        order.cancelStatus = 'disapproved';
         await order.save();
-        res.status(200).json({ message: "Cancel request disapproved", order });
+        
+        const formatted = await formatOrder(order.toObject());
+        res.status(200).json({ message: "Cancel request disapproved", order: formatted });
     } catch (error) {
         console.error("Error disapproving cancel", error);
         res.status(500).json({ message: "Failed to disapprove cancellation" });

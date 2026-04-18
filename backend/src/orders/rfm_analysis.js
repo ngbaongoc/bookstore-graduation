@@ -8,7 +8,7 @@ const getRFMAnalysis = async () => {
         {
             $match: {
                 status: 'Delivered',
-                'stageDates.Delivered': { $ne: null }
+                'stageDelivered': { $ne: null }
             }
         },
         {
@@ -16,7 +16,7 @@ const getRFMAnalysis = async () => {
                 _id: "$userId",
                 monetary: { $sum: "$totalPrice" },
                 frequency: { $count: {} },
-                lastOrderDate: { $max: "$stageDates.Delivered" }
+                lastOrderDate: { $max: "$stageDelivered" }
             }
         },
         {

@@ -2,7 +2,16 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const booksApi = createApi({
     reducerPath: 'booksApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/books' }),
+    baseQuery: fetchBaseQuery({ 
+        baseUrl: 'http://localhost:5000/api/books',
+        prepareHeaders: (headers) => {
+            const token = localStorage.getItem('token')
+            if (token) {
+                headers.set('authorization', `Bearer ${token}`)
+            }
+            return headers
+        }
+    }),
     tagTypes: ['Books'],
     endpoints: (builder) => ({
         fetchAllBooks: builder.query({
@@ -43,6 +52,14 @@ const booksApi = createApi({
                 body: { review, score }
             }),
             invalidatesTags: (result, error, { id }) => [{ type: 'Books', id }]
+        }),
+        importBooks: builder.mutation({
+            query: (books) => ({
+                url: '/import',
+                method: 'POST',
+                body: books
+            }),
+            invalidatesTags: ['Books']
         })
     }),
 })
@@ -53,6 +70,7 @@ export const {
     useUpdateBookMutation,
     useDeleteBookMutation,
     useAddBookMutation,
-    useAddReviewMutation
+    useAddReviewMutation,
+    useImportBooksMutation
 } = booksApi
 export default booksApi

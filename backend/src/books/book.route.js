@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { postABook, getAllBooks, getSingleBook, UpdateBook, deleteABook, addReview } = require('./book.controller');
+const { postABook, getAllBooks, getSingleBook, UpdateBook, deleteABook, addReview, importBooks } = require('./book.controller');
 const verifyAdminToken = require('../middleware/verifyAdminToken');
 
 // Post a book: submit something from frontend to db
 router.post('/create-book', verifyAdminToken, postABook);
+
+// Import books in bulk from CSV
+router.post('/import', verifyAdminToken, importBooks);
 
 // get all books
 router.get('/', getAllBooks);

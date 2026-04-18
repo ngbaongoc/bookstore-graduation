@@ -8,6 +8,8 @@ import { blogsApi } from './features/blogs/blogsApi'
 import usersApi from './features/users/usersApi'
 import inventoryApi from './features/inventory/inventoryApi'
 import { statsApi } from './features/stats/statsApi'
+import { intelligenceApi } from './features/intelligence/intelligenceApi'
+import intelligenceReducer from './features/intelligence/intelligenceSlice'
 
 export const store = configureStore({
     reducer: {
@@ -20,6 +22,8 @@ export const store = configureStore({
         [usersApi.reducerPath]: usersApi.reducer,
         [inventoryApi.reducerPath]: inventoryApi.reducer,
         [statsApi.reducerPath]: statsApi.reducer,
+        [intelligenceApi.reducerPath]: intelligenceApi.reducer,
+        intelligence: intelligenceReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -29,6 +33,7 @@ export const store = configureStore({
             blogsApi.middleware,
             usersApi.middleware,
             inventoryApi.middleware,
-            statsApi.middleware
+            statsApi.middleware,
+            intelligenceApi.middleware
         ),
 })

@@ -32,6 +32,14 @@ export const inventoryApi = createApi({
             }),
             invalidatesTags: ['InventoryLogs', 'Books']
         }),
+        adjustBinLocation: builder.mutation({
+            query: ({ id, newBinLocation }) => ({
+                url: `/adjust-bin/${id}`,
+                method: 'PUT',
+                body: { newBinLocation }
+            }),
+            invalidatesTags: ['InventoryLogs', 'Books']
+        }),
         confirm3PLPickup: builder.mutation({
             query: ({ id, quantityPickedUp }) => ({
                 url: `/handover/${id}`,
@@ -54,6 +62,7 @@ export const {
     useGetInventoryLogsQuery,
     useGetInventoryAlertsQuery,
     useAdjustStockMutation,
+    useAdjustBinLocationMutation,
     useConfirm3PLPickupMutation,
     usePackOrderMutation
 } = inventoryApi

@@ -1,17 +1,73 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { MdInventory, MdOutlineShoppingCart, MdLibraryBooks, MdAddCircleOutline } from 'react-icons/md'
-import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi'
-import { useAdjustStockMutation } from '../../redux/features/inventory/inventoryApi'
+import { MdInventory, MdOutlineShoppingCart, MdLibraryBooks, MdAddCircleOutline, MdFileUpload } from 'react-icons/md'
+import { useFetchAllBooksQuery, useImportBooksMutation } from '../../redux/features/books/booksApi'
+import { useAdjustStockMutation, useAdjustBinLocationMutation } from '../../redux/features/inventory/inventoryApi'
+import Papa from 'papaparse'
 
 const Inventory = () => {
     const { data: books = [], refetch: refetchBooks } = useFetchAllBooksQuery()
     const [adjustStock] = useAdjustStockMutation()
+    const [adjustBinLocation] = useAdjustBinLocationMutation()
+    const [importBooks] = useImportBooksMutation()
 
     const [adjustModalOpen, setAdjustModalOpen] = useState(false)
+    const [adjustBinModalOpen, setAdjustBinModalOpen] = useState(false)
     const [selectedBook, setSelectedBook] = useState(null)
     const [adjustQty, setAdjustQty] = useState(0)
+    const [newBin, setNewBin] = useState('')
+    const fileInputRef = useRef(null)
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0]
+        if (!file) return;
+
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: async (results) => {
+                const booksData = results.data.map(row => ({
+                    ...row,
+                    published_year: parseInt(row.published_year) || 0,
+                    num_pages: parseInt(row.num_pages) || 0,
+                    price: parseFloat(row.price) || 0,
+                    inHouseQuantity: parseInt(row.inHouseQuantity) || 0,
+                    binLocation: row.binLocation || "General Shelf"
+                }));
+                
+                try {
+                    Swal.fire({
+                        title: 'Importing...',
+                        text: `Importing ${booksData.length} books. Please wait.`,
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const res = await importBooks(booksData).unwrap();
+                    Swal.fire({
+                        title: 'Success!',
+                        text: res.message,
+                        icon: 'success'
+                    });
+                    refetchBooks();
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: error?.data?.message || 'Failed to import books.',
+                        icon: 'error'
+                    });
+                }
+            },
+            error: (error) => {
+                Swal.fire('Error', 'Failed to parse CSV: ' + error.message, 'error');
+            }
+        });
+        
+        e.target.value = null; // Reset input so same file can be selected again
+    }
 
     const handleAdjust = async () => {
         const qty = parseInt(adjustQty);
@@ -59,6 +115,38 @@ const Inventory = () => {
         setAdjustModalOpen(true)
     }
 
+    const openAdjustBin = (book) => {
+        setSelectedBook(book)
+        setNewBin(book.inventory?.binLocation || '')
+        setAdjustBinModalOpen(true)
+    }
+
+    const handleAdjustBin = async () => {
+        if (!selectedBook || !newBin.trim()) {
+            Swal.fire('Invalid Bin', 'Please enter a valid bin location.', 'warning');
+            return;
+        }
+        try {
+            await adjustBinLocation({ id: selectedBook._id, newBinLocation: newBin.trim() }).unwrap();
+            setAdjustBinModalOpen(false)
+            setNewBin('')
+            Swal.fire({
+                title: 'Bin Updated!', 
+                text: `Successfully registered new bin location for "${selectedBook.title}".`, 
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            refetchBooks()
+        } catch (error) {
+            Swal.fire({
+                title: 'Error', 
+                text: error?.data?.message || 'Failed to adjust bin location. Please try again.', 
+                icon: 'error'
+            });
+        }
+    }
+
     const lowStockBooks = books.filter(b => (b.inventory?.inHouseQuantity || 0) < 10)
 
     const getStockBadge = (qty) => {
@@ -99,10 +187,23 @@ const Inventory = () => {
                     <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Inventory</h1>
                     <p className="text-gray-500 text-sm mt-1 font-medium">Manage your book catalog and shelf quantities</p>
                 </div>
-                <Link to="/admin/add-book" className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2 group">
-                    <MdAddCircleOutline className="text-2xl group-hover:rotate-90 transition-transform duration-300" />
-                    <span>Add New Book</span>
-                </Link>
+                <div className="flex gap-4 items-center">
+                    <input 
+                        type="file" 
+                        accept=".csv" 
+                        ref={fileInputRef} 
+                        style={{ display: 'none' }} 
+                        onChange={handleFileUpload} 
+                    />
+                    <button onClick={() => fileInputRef.current.click()} className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-xl transition-all shadow-sm flex items-center gap-2 group border border-gray-200">
+                        <MdFileUpload className="text-2xl group-hover:-translate-y-1 transition-transform duration-300" />
+                        <span>Import CSV</span>
+                    </button>
+                    <Link to="/admin/add-book" className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2 group">
+                        <MdAddCircleOutline className="text-2xl group-hover:rotate-90 transition-transform duration-300" />
+                        <span>Add New Book</span>
+                    </Link>
+                </div>
             </div>
 
             {/* Stats Cards */}
@@ -152,7 +253,6 @@ const Inventory = () => {
                             <th className="pb-4 px-2 font-semibold">Bin Location</th>
                             <th className="pb-4 px-2 font-semibold text-center">In-House Qty</th>
                             <th className="pb-4 px-2 font-semibold text-center">Reserved</th>
-                            <th className="pb-4 px-2 font-semibold text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -172,17 +272,25 @@ const Inventory = () => {
                                         {book.title}
                                     </Link>
                                 </td>
-                                <td className="py-4 px-2 text-gray-600">{book.inventory?.binLocation || 'General Shelf'}</td>
-                                <td className="py-4 px-2 text-center">
-                                    {getStockBadge(book.inventory?.inHouseQuantity || 0)}
+                                <td className="py-4 px-2 text-gray-600 align-top">
+                                    <div className="flex flex-col items-start gap-3">
+                                        <span className="pt-0.5">{book.inventory?.binLocation || 'General Shelf'}</span>
+                                        <button onClick={() => openAdjustBin(book)} className="text-blue-700 hover:text-white font-bold text-xs flex items-center justify-center gap-1 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:border-blue-600 px-3 py-1.5 rounded-lg transition-all shadow-sm w-max whitespace-nowrap active:scale-95">
+                                            <MdAddCircleOutline className="text-sm" /> 
+                                            Adjust
+                                        </button>
+                                    </div>
+                                </td>
+                                <td className="py-4 px-2 text-center align-top">
+                                    <div className="flex flex-col items-center gap-3">
+                                        {getStockBadge(book.inventory?.inHouseQuantity || 0)}
+                                        <button onClick={() => openAdjust(book)} className="text-blue-700 hover:text-white font-bold text-xs flex items-center justify-center gap-1 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:border-blue-600 px-3 py-1.5 rounded-lg transition-all shadow-sm w-max whitespace-nowrap active:scale-95">
+                                            <MdAddCircleOutline className="text-sm" /> 
+                                            Adjust
+                                        </button>
+                                    </div>
                                 </td>
                                 <td className="py-4 px-2 text-center text-gray-600 font-medium">{book.inventory?.reservedQuantity || 0}</td>
-                                <td className="py-4 px-2 text-right">
-                                    <button onClick={() => openAdjust(book)} className="text-blue-700 hover:text-white font-bold text-xs flex items-center justify-center gap-1 ml-auto bg-blue-100 hover:bg-blue-600 px-4 py-2.5 rounded-xl transition-all shadow-sm">
-                                        <MdAddCircleOutline className="text-sm" /> 
-                                        Adjust
-                                    </button>
-                                </td>
                             </tr>
                             )
                         })}
@@ -206,6 +314,27 @@ const Inventory = () => {
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setAdjustModalOpen(false)} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
                             <button onClick={handleAdjust} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Adjust Bin Location Modal */}
+            {adjustBinModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-sm shadow-xl">
+                        <h3 className="text-lg font-bold mb-4">Adjust Bin Location</h3>
+                        <p className="text-sm text-gray-600 mb-4">You are updating the shelf location for <b>{selectedBook?.title}</b>. Enter the new alphanumeric bin code.</p>
+                        <input 
+                            type="text" 
+                            className="w-full border p-2 rounded mb-4 font-mono uppercase" 
+                            value={newBin} 
+                            onChange={(e) => setNewBin(e.target.value)} 
+                            placeholder="e.g. A1-05" 
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button onClick={() => setAdjustBinModalOpen(false)} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
+                            <button onClick={handleAdjustBin} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Submit</button>
                         </div>
                     </div>
                 </div>
