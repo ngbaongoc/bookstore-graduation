@@ -29,6 +29,7 @@ const blogRoutes = require('./src/blogs/blog.route')
 const inventoryRoutes = require('./src/inventory/inventory.route')
 const statsRoutes = require('./src/stats/stats.route')
 const initAbandonedCartCron = require('./src/orders/orderCron')
+const initEmailCron = require('./src/emails/emailCron')
 app.use("/api/books", bookRoutes)
 app.use("/api", uploadRouter)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -50,6 +51,7 @@ async function main() {
 main().then(() => {
     console.log("MongoDB connected successfully!");
     initAbandonedCartCron();
+    initEmailCron();
 }).catch(err => console.log(err));
 
 app.listen(port, () => {

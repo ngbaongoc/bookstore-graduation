@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { adminLogin, registerAdmin, getRFMReport } = require('./admin.controller');
+const { adminLogin, registerAdmin, getRFMReport, composeSendEmail } = require('./admin.controller');
 
 // Admin authentication
 router.post('/login', adminLogin);
@@ -9,5 +9,7 @@ router.post('/login', adminLogin);
 router.post('/register', registerAdmin);
 // RFM Analysis report
 router.get('/rfm-report', getRFMReport);
+// Send email
+router.post('/send-email', composeSendEmail);
 
 module.exports = router;

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Swal from 'sweetalert2';
+import getBaseUrl from '../../utils/baseURL';
 
 const ComposeEmail = () => {
     const location = useLocation();
@@ -10,6 +12,7 @@ const ComposeEmail = () => {
     
     const [to, setTo] = useState('');
     const [subject, setSubject] = useState('');
+    const [scheduledAt, setScheduledAt] = useState('');
 
     useEffect(() => {
         if (location.state) {
@@ -22,20 +25,50 @@ const ComposeEmail = () => {
         }
     }, [location.state]);
 
-    const handleSend = (e) => {
-        e.preventDefault();
-        
-        // Final email body including inline base64 images
-        const finalHtml = editorRef.current.innerHTML;
+    const [sending, setSending] = useState(false);
 
-        Swal.fire({
-            title: 'Mock Email Sent!',
-            text: 'We will install the actual email sending feature later. The image is included inline within the message HTML!',
-            icon: 'info',
-            confirmButtonColor: '#3b82f6',
-        }).then(() => {
-            navigate('/admin/manage-users');
-        });
+    const handleSend = async (e) => {
+        e.preventDefault();
+
+        const finalHtml = editorRef.current.innerHTML;
+        if (!finalHtml.trim()) {
+            return Swal.fire({ title: 'Error', text: 'Email body cannot be empty', icon: 'warning', confirmButtonColor: '#3b82f6' });
+        }
+
+        setSending(true);
+        try {
+            const payload = { to, subject, html: finalHtml };
+            if (scheduledAt) {
+                const parsed = new Date(scheduledAt);
+                if (parsed <= new Date()) {
+                    setSending(false);
+                    return Swal.fire({ title: 'Error', text: 'Scheduled time must be in the future', icon: 'warning', confirmButtonColor: '#3b82f6' });
+                }
+                payload.scheduledAt = parsed.toISOString();
+            }
+
+            await axios.post(`${getBaseUrl()}/api/admin/send-email`, payload);
+            const formattedTime = scheduledAt ? new Date(scheduledAt).toLocaleString('vi-VN') : '';
+            Swal.fire({
+                title: scheduledAt ? 'Email Scheduled!' : 'Email Sent!',
+                text: scheduledAt
+                    ? `Email to ${to} scheduled for ${formattedTime}.`
+                    : `Email has been sent to ${to} successfully.`,
+                icon: 'success',
+                confirmButtonColor: '#3b82f6',
+            }).then(() => {
+                navigate('/admin/manage-users');
+            });
+        } catch (error) {
+            Swal.fire({
+                title: 'Failed to Send',
+                text: error.response?.data?.message || 'Something went wrong while sending the email.',
+                icon: 'error',
+                confirmButtonColor: '#3b82f6',
+            });
+        } finally {
+            setSending(false);
+        }
     };
 
     const handleImageChange = (e) => {
@@ -94,6 +127,18 @@ const ComposeEmail = () => {
                 </div>
                 
                 <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Schedule Send (optional)</label>
+                    <input
+                        type="datetime-local"
+                        value={scheduledAt}
+                        onChange={(e) => setScheduledAt(e.target.value)}
+                        min={new Date().toISOString().slice(0, 16)}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Leave empty to send immediately</p>
+                </div>
+
+                <div>
                     <div className="flex justify-between items-center mb-2">
                         <label className="block text-sm font-semibold text-gray-700">Message</label>
                         <button 
@@ -134,7 +179,7 @@ const ComposeEmail = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                         </svg>
-                        Mock Send Email
+                        {sending ? 'Sending...' : (scheduledAt ? 'Schedule Email' : 'Send Email')}
                     </button>
                 </div>
             </form>

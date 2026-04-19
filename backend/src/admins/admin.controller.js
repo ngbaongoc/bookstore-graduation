@@ -2,6 +2,8 @@ const Admin = require("./admin.model");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { getRFMAnalysis } = require('../orders/rfm_analysis');
+const sendEmail = require('../utils/sendEmail');
+const ScheduledEmail = require('../emails/scheduledEmail.model');
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY
 
@@ -68,8 +70,41 @@ const getRFMReport = async (req, res) => {
     }
 }
 
+const composeSendEmail = async (req, res) => {
+    const { to, subject, html, scheduledAt } = req.body;
+    if (!to || !subject || !html) {
+        return res.status(400).send({ message: "Missing required fields: to, subject, html" });
+    }
+    try {
+        // If scheduledAt is provided, save to DB for cron to pick up
+        if (scheduledAt) {
+            const scheduled = new ScheduledEmail({
+                to, subject, html,
+                scheduledAt: new Date(scheduledAt)
+            });
+            await scheduled.save();
+            return res.status(200).send({
+                message: "Email scheduled successfully",
+                scheduledAt: scheduled.scheduledAt
+            });
+        }
+
+        // Otherwise send immediately
+        const result = await sendEmail({ to, subject, html });
+        if (result.success) {
+            return res.status(200).send({ message: "Email sent successfully", messageId: result.messageId });
+        } else {
+            return res.status(500).send({ message: "Failed to send email", error: result.error });
+        }
+    } catch (error) {
+        console.error("Failed to send email", error);
+        res.status(500).send({ message: "Failed to send email" });
+    }
+};
+
 module.exports = {
     adminLogin,
     registerAdmin,
-    getRFMReport
+    getRFMReport,
+    composeSendEmail
 }
