@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form"
 import { useAddBookMutation } from '../../redux/features/books/booksApi'
 import { useNavigate } from 'react-router-dom'
 import { MdArrowBack, MdCloudUpload, MdCheckCircle } from 'react-icons/md'
+import getBaseUrl from '../../utils/baseURL'
 
 const AddBook = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm()
@@ -19,7 +20,7 @@ const AddBook = () => {
         formData.append('coverImage', file)
 
         try {
-            const response = await fetch('http://localhost:5000/api/upload', {
+            const response = await fetch(`${getBaseUrl()}/api/upload`, {
                 method: 'POST',
                 body: formData,
             })
@@ -30,7 +31,7 @@ const AddBook = () => {
 
             const data = await response.json()
             setUploadedImagePath(data.filePath)
-            setThumbnailPreview(`http://localhost:5000${data.filePath}`)
+            setThumbnailPreview(`${getBaseUrl()}${data.filePath}`)
         } catch (error) {
             alert('Image upload failed: ' + error.message)
         }

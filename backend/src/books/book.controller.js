@@ -42,8 +42,8 @@ const getAllBooks = async (req, res) => {
         res.status(200).send(books)
 
     } catch (error) {
-        console.error("Error fetching books", error);
-        res.status(500).send({ message: "Failed to fetch books" })
+        console.error("Error fetching books", error.message, error.stack);
+        res.status(500).send({ message: "Failed to fetch books", error: error.message })
     }
 }
 

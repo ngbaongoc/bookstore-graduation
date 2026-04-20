@@ -21,6 +21,9 @@ import ManageUsers from "../pages/dashboard/ManageUsers";
 import AddBlog from "../pages/dashboard/AddBlog";
 import BlogPage from "../pages/blog/BlogPage";
 import SingleBlogPage from "../pages/blog/SingleBlogPage";
+import About from "../pages/about/About";
+import Contact from "../pages/contact/Contact";
+import BooksPage from "../pages/books/BooksPage";
 import UserSettings from "../pages/dashboard/UserSettings";
 import ComposeEmail from "../pages/dashboard/ComposeEmail";
 import ManageOrders from "../pages/dashboard/ManageOrders";
@@ -59,7 +62,9 @@ const router = createBrowserRouter([
             { path: "/", element: <Home /> },
             { path: "/orders", element: <PrivateRoute><OrderPage /></PrivateRoute> },
             { path: "/orders/:id", element: <PrivateRoute><OrderDetail /></PrivateRoute> },
-            { path: "/about", element: <div>About</div> },
+            { path: "/about", element: <About /> },
+            { path: "/contact", element: <Contact /> },
+            { path: "/books", element: <BooksPage /> },
             { path: "/login", element: <Login /> },
             { path: "/register", element: <Register /> },
             { path: "/cart", element: <CartPage /> },
