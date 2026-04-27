@@ -24,8 +24,8 @@ const getBlogById = async (req, res) => {
 
 const createBlog = async (req, res) => {
     try {
-        const { title, description, category, author, coverImage } = req.body;
-        const newBlog = new Blog({ title, description, category, author, coverImage });
+        const { title, description, category, author, language, coverImage } = req.body;
+        const newBlog = new Blog({ title, description, category, author, language, coverImage });
         const savedBlog = await newBlog.save();
         res.status(201).json({ message: "Blog created successfully", blog: savedBlog });
     } catch (error) {

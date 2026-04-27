@@ -51,13 +51,8 @@ There are **6 primary email templates** currently in use or implementation.
 - **Purpose:** Keeping the brand top-of-mind for inactive users by sharing trending titles and news.
 - **Location:** `frontend/src/pages/dashboard/ManageUsers.jsx` (Dynamic Compose)
 
-### 5. Abandoned Cart Template (Automated)
-- **Target:** Users with 'pending' orders older than 24 hours.
-- **Subject:** Khôi phục giỏ hàng của bạn
-- **Purpose:** Recovering lost sales by reminding users of items left in their cart with a direct link to checkout.
-- **Location:** `backend/src/orders/orderCron.js` (Cron Job)
 
-### 6. Loyalty Voucher Template (Manual Bulk)
+### 5. Loyalty Voucher Template (Manual Bulk)
 - **Target:** Manually selected recipients (usually the `Loyal Customers` segment).
 - **Subject:** Món quà đặc biệt từ Bookstore - Giảm giá 20% cho bạn!
 - **Code:** `LOYALTY20`

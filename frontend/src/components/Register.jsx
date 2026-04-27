@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form"
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import getBaseUrl from '../utils/baseURL';
 
 const Register = () => {
+    const { t } = useTranslation();
     const [message, setMessage] = useState("");
     const { registerUser, signInWithGoogle } = useAuth();
     const navigate = useNavigate();
@@ -37,10 +39,10 @@ const Register = () => {
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            alert(`User registered successfully! Your User ID is ${generatedUserId}`);
+            alert(t("register.success", { userId: generatedUserId }));
             navigate("/")
         } catch (error) {
-            setMessage("Registration failed. Please try again.")
+            setMessage(t("register.error"))
             console.error(error)
         }
     }
@@ -48,10 +50,10 @@ const Register = () => {
     const handleGoogleSignIn = async () => {
         try {
             await signInWithGoogle();
-            alert("Login successful!");
+            alert(t("login.success"));
             navigate("/")
         } catch (error) {
-            alert("Google sign in failed!")
+            alert(t("login.googleError"))
             console.error(error)
         }
     }
@@ -59,38 +61,38 @@ const Register = () => {
     return (
         <div className='h-[calc(100vh-120px)] flex justify-center items-center '>
             <div className='w-full max-w-sm mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
-                <h2 className='text-xl font-semibold mb-4'>Please Register</h2>
+                <h2 className='text-xl font-semibold mb-4'>{t("register.title")}</h2>
 
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className='mb-4'>
-                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="username">Username</label>
+                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="username">{t("register.usernameLabel")}</label>
                         <input
                             {...register("username", { required: true })}
-                            type="text" name="username" id="username" placeholder='Username'
+                            type="text" name="username" id="username" placeholder={t("register.usernamePlaceholder")}
                             className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
                         />
                     </div>
                     <div className='mb-4'>
-                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="email">Email</label>
+                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="email">{t("register.emailLabel")}</label>
                         <input
                             {...register("email", { required: true })}
-                            type="email" name="email" id="email" placeholder='Email Address'
+                            type="email" name="email" id="email" placeholder={t("register.emailPlaceholder")}
                             className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
                         />
                     </div>
                     <div className='mb-4'>
-                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="password">Password</label>
+                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="password">{t("register.passwordLabel")}</label>
                         <input
                             {...register("password", { required: true })}
-                            type="password" name="password" id="password" placeholder='Password'
+                            type="password" name="password" id="password" placeholder={t("register.passwordPlaceholder")}
                             className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
                         />
                     </div>
                     <div className='mb-4'>
-                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="phone">Phone Number</label>
+                        <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="phone">{t("register.phoneLabel")}</label>
                         <input
                             {...register("phone", { required: true })}
-                            type="tel" name="phone" id="phone" placeholder='Phone Number'
+                            type="tel" name="phone" id="phone" placeholder={t("register.phonePlaceholder")}
                             className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
                         />
                     </div>
@@ -98,10 +100,10 @@ const Register = () => {
                         message && <p className='text-red-500 text-xs italic mb-3'>{message}</p>
                     }
                     <div>
-                        <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none'>Register</button>
+                        <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none'>{t("register.button")}</button>
                     </div>
                 </form>
-                <p className='align-baseline font-medium mt-4 text-sm'>Have an account? Please <Link to="/login" className='text-blue-500 hover:text-blue-700'>Login</Link></p>
+                <p className='align-baseline font-medium mt-4 text-sm'>{t("register.haveAccount")} <Link to="/login" className='text-blue-500 hover:text-blue-700'>{t("register.loginLink")}</Link></p>
 
                 {/* google sign in */}
                 <div className='mt-4'>
@@ -109,11 +111,11 @@ const Register = () => {
                         onClick={handleGoogleSignIn}
                         className='w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none'>
                         <FaGoogle className='mr-2' />
-                        Sign in with Google
+                        {t("login.googleSignIn")}
                     </button>
                 </div>
 
-                <p className='mt-5 text-center text-gray-500 text-xs'>©2025 Book Store. All rights reserved.</p>
+                <p className='mt-5 text-center text-gray-500 text-xs'>{t("login.footer")}</p>
             </div>
         </div>
     )

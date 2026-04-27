@@ -2,28 +2,33 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi'
 import BookCard from '../home/BookCard'
 import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 
-const SORT_OPTIONS = [
-    { label: 'Newest', value: 'newest' },
-    { label: 'Price: Low to High', value: 'price_asc' },
-    { label: 'Price: High to Low', value: 'price_desc' },
-    { label: 'Title: A-Z', value: 'title_asc' },
-]
+// Move SORT_OPTIONS inside component to use t()
 
 const PAGE_SIZE = 12
 
 const BooksPage = () => {
+    const { t } = useTranslation();
+
+    const SORT_OPTIONS = [
+        { label: t('books.sortNewest'), value: 'newest' },
+        { label: t('books.sortPriceAsc'), value: 'price_asc' },
+        { label: t('books.sortPriceDesc'), value: 'price_desc' },
+        { label: t('books.sortTitleAsc'), value: 'title_asc' },
+    ]
+
     const { data: books = [], isLoading, isError } = useFetchAllBooksQuery()
     const [search, setSearch] = useState('')
-    const [selectedCategory, setSelectedCategory] = useState('All')
+    const [selectedCategory, setSelectedCategory] = useState(t('books.allCategory'))
     const [sortBy, setSortBy] = useState('newest')
     const [currentPage, setCurrentPage] = useState(1)
 
     // Dynamic categories from data
     const categories = useMemo(() => {
         const cats = [...new Set(books.map(b => b.category).filter(Boolean))]
-        return ['All', ...cats.sort()]
-    }, [books])
+        return [t('books.allCategory'), ...cats.sort()]
+    }, [books, t])
 
     // Filter + sort
     const filteredBooks = useMemo(() => {
@@ -40,7 +45,7 @@ const BooksPage = () => {
         }
 
         // Category
-        if (selectedCategory !== 'All') {
+        if (selectedCategory !== t('books.allCategory')) {
             result = result.filter(b => b.category === selectedCategory)
         }
 
@@ -69,6 +74,13 @@ const BooksPage = () => {
 
     // Reset page when filters change
     useEffect(() => { setCurrentPage(1) }, [search, selectedCategory, sortBy])
+
+    // Effect to reset selectedCategory when language changes if it was "All"
+    useEffect(() => {
+        if (selectedCategory === 'All' || selectedCategory === 'Tất cả') {
+             setSelectedCategory(t('books.allCategory'));
+        }
+    }, [t])
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
@@ -100,7 +112,7 @@ const BooksPage = () => {
 
     if (isError) return (
         <div className="min-h-[60vh] flex items-center justify-center text-gray-500">
-            Failed to load books. Please try again later.
+            {t('books.loadingError')}
         </div>
     )
 
@@ -109,9 +121,9 @@ const BooksPage = () => {
             {/* Hero */}
             <section className="bg-gradient-to-br from-[#008080] to-[#005f5f] text-white py-16 px-4 rounded-2xl mb-10">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Browse Our Collection</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{t('books.heroTitle')}</h1>
                     <p className="text-white/80 text-lg max-w-xl mx-auto mb-8">
-                        Discover thousands of books across every genre. Find your next favorite read.
+                        {t('books.heroDesc')}
                     </p>
 
                     {/* Search Bar */}
@@ -119,7 +131,7 @@ const BooksPage = () => {
                         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
                         <input
                             type="text"
-                            placeholder="Search by title, author, or ISBN..."
+                            placeholder={t('books.searchPlaceholder')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 shadow-lg"
@@ -149,9 +161,9 @@ const BooksPage = () => {
                 {/* Toolbar: Results count + Sort */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
                     <p className="text-sm text-gray-500">
-                        Showing <span className="font-semibold text-gray-700">{filteredBooks.length}</span> {filteredBooks.length === 1 ? 'book' : 'books'}
-                        {selectedCategory !== 'All' && <span> in <span className="font-semibold text-[#008080]">{selectedCategory}</span></span>}
-                        {search && <span> matching "<span className="font-semibold text-gray-700">{search}</span>"</span>}
+                        {t('books.showing')} <span className="font-semibold text-gray-700">{filteredBooks.length}</span> {filteredBooks.length === 1 ? t('books.bookSingle') : t('books.bookPlural')}
+                        {selectedCategory !== t('books.allCategory') && <span> {t('books.in')} <span className="font-semibold text-[#008080]">{selectedCategory}</span></span>}
+                        {search && <span> {t('books.matching')} "<span className="font-semibold text-gray-700">{search}</span>"</span>}
                     </p>
                     <select
                         value={sortBy}
@@ -168,13 +180,13 @@ const BooksPage = () => {
                 {displayedBooks.length === 0 ? (
                     <div className="text-center py-20 bg-gray-50 rounded-2xl">
                         <p className="text-6xl mb-4">📚</p>
-                        <p className="text-xl text-gray-500 mb-2">No books found</p>
-                        <p className="text-sm text-gray-400 mb-6">Try adjusting your search or filter.</p>
+                        <p className="text-xl text-gray-500 mb-2">{t('books.notFound')}</p>
+                        <p className="text-sm text-gray-400 mb-6">{t('books.notFoundDesc')}</p>
                         <button
-                            onClick={() => { setSearch(''); setSelectedCategory('All') }}
+                            onClick={() => { setSearch(''); setSelectedCategory(t('books.allCategory')) }}
                             className="text-[#008080] hover:underline font-semibold text-sm"
                         >
-                            Clear all filters
+                            {t('books.clearFilters')}
                         </button>
                     </div>
                 ) : (

@@ -29,6 +29,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['user'],
         default: 'user'
+    },
+    rfmCode: {
+        type: String,
+        default: null
+    },
+    segment: {
+        type: String,
+        default: 'No Orders'
     }
 }, {
     timestamps: true

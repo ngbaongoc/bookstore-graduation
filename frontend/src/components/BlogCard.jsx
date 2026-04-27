@@ -1,7 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const BlogCard = ({ blog }) => {
+    const { i18n } = useTranslation();
     const fallbackImage = 'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=600&q=80'
 
     return (
@@ -33,7 +35,7 @@ const BlogCard = ({ blog }) => {
                             <span className="text-xs font-medium text-gray-700">{blog.author}</span>
                         </div>
                         <span className="text-xs text-gray-400">
-                            {blog.createdAt && new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {blog.createdAt && new Date(blog.createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', { month: 'short', day: 'numeric' })}
                         </span>
                     </div>
                 </div>

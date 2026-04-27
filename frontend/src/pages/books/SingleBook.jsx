@@ -9,6 +9,7 @@ import { FaStar, FaRegStar } from "react-icons/fa"
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/features/cart/cartSlice';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const StarPicker = ({ rating, setRating }) => (
     <div className="flex gap-1 text-2xl">
@@ -28,6 +29,7 @@ const StarPicker = ({ rating, setRating }) => (
 )
 
 const SingleBook = () => {
+    const { t } = useTranslation();
     const { isAdmin, currentUser } = useAuth();
     const { id } = useParams()
     const navigate = useNavigate()
@@ -49,7 +51,7 @@ const SingleBook = () => {
     const handleReviewSubmit = async (e) => {
         e.preventDefault()
         if (!currentUser) {
-            alert("Please log in to post a review.")
+            alert(t("single.loginRequired"))
             return
         }
         try {
@@ -63,24 +65,24 @@ const SingleBook = () => {
             setComment('')
             setRating(5)
         } catch (err) {
-            alert("Failed to post review: " + (err.data?.message || err.message))
+            alert(t("single.postError") + ": " + (err.data?.message || err.message))
         }
     }
 
     const handleDelete = async () => {
-        if (window.confirm("Are you sure you want to delete this book?")) {
+        if (window.confirm(t("single.deleteConfirm"))) {
             try {
                 await deleteBook(id).unwrap()
-                alert("Book deleted successfully")
+                alert(t("single.deleteSuccess"))
                 navigate('/')
             } catch (err) {
-                alert("Failed to delete book: " + (err.data?.message || err.message))
+                alert(t("single.deleteError") + ": " + (err.data?.message || err.message))
             }
         }
     }
 
-    if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>
-    if (isError) return <div className="flex justify-center items-center h-screen">Error loading book details</div>
+    if (isLoading) return <div className="flex justify-center items-center h-screen">{t("nav.loading")}...</div>
+    if (isError) return <div className="flex justify-center items-center h-screen">{t("books.loadingError")}</div>
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10 relative">
@@ -97,12 +99,12 @@ const SingleBook = () => {
                                 <Link
                                     to={`/books/edit/${id}`}
                                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Edit Book
+                                    {t("single.editBook")}
                                 </Link>
                                 <button
                                     onClick={handleDelete}
                                     className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                    Delete Book
+                                    {t("single.deleteBook")}
                                 </button>
                             </div>
                         )}
@@ -120,12 +122,12 @@ const SingleBook = () => {
                 <div className="md:w-1/2 flex flex-col justify-center">
                     <h1 className="text-3xl font-bold mb-4">{book?.title}</h1>
                     <div className="space-y-4 text-gray-700">
-                        <p><span className="font-semibold">Author:</span> {book?.author}</p>
-                        <p><span className="font-semibold">Category:</span> {book?.category}</p>
-                        <p><span className="font-semibold">ISBN:</span> {book?.isbn}</p>
+                        <p><span className="font-semibold">{t("single.author")}:</span> {book?.author}</p>
+                        <p><span className="font-semibold">{t("single.category")}:</span> {book?.category}</p>
+                        <p><span className="font-semibold">{t("single.isbn")}:</span> {book?.isbn}</p>
                         <div className="flex items-center gap-2">
-                            <span className="font-semibold">Reviews:</span>
-                            <span className="text-gray-600 text-sm">({reviews.length} reviews)</span>
+                            <span className="font-semibold">{t("single.reviews")}:</span>
+                            <span className="text-gray-600 text-sm">{t("single.reviewsCount", { count: reviews.length })}</span>
                         </div>
                         <p className="text-2xl font-bold text-gray-900">
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(book?.price || book?.newPrice)}
@@ -135,19 +137,19 @@ const SingleBook = () => {
                         onClick={() => handleAddToCart(book)}
                         className="mt-8 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-md flex items-center justify-center gap-2 transition-colors w-max">
                         <FiShoppingCart />
-                        <span>Add to Cart</span>
+                        <span>{t("single.addToCart")}</span>
                     </button>
                 </div>
             </div>
 
             {/* Customer Reviews */}
             <div className="mt-12 border-t pt-8">
-                <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+                <h2 className="text-2xl font-bold mb-6">{t("single.customerReviews")}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     {/* Review List */}
                     <div className="space-y-4">
                         {isLoadingReviews ? (
-                            <p className="text-gray-400">Loading reviews...</p>
+                            <p className="text-gray-400">{t("single.loadingReviews")}</p>
                         ) : reviews.length > 0 ? (
                             reviews.map((review) => (
                                 <div key={review._id} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
@@ -165,24 +167,24 @@ const SingleBook = () => {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-500">No reviews yet. Be the first to review!</p>
+                            <p className="text-gray-500">{t("single.noReviews")}</p>
                         )}
                     </div>
 
                     {/* Review Form - only shown to logged-in users */}
                     {currentUser ? (
                         <div className="bg-white p-6 rounded-lg border shadow-sm h-fit">
-                            <h3 className="text-lg font-semibold mb-4">Post a Review</h3>
+                            <h3 className="text-lg font-semibold mb-4">{t("single.postReview")}</h3>
                             <form onSubmit={handleReviewSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Your Rating</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("single.yourRating")}</label>
                                     <StarPicker rating={rating} setRating={setRating} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Your Review</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("single.yourReview")}</label>
                                     <textarea
                                         className="w-full border rounded-md p-2 h-32 focus:ring-2 focus:ring-yellow-400 outline-none resize-none"
-                                        placeholder="Tell us what you think..."
+                                        placeholder={t("single.reviewPlaceholder")}
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
                                         required
@@ -193,13 +195,13 @@ const SingleBook = () => {
                                     disabled={isPosting}
                                     className="w-full bg-black text-white font-bold py-2 rounded-md hover:bg-gray-800 transition-colors disabled:bg-gray-400"
                                 >
-                                    {isPosting ? 'Posting...' : 'Post Review'}
+                                    {isPosting ? t("single.posting") : t("single.postButton")}
                                 </button>
                             </form>
                         </div>
                     ) : (
                         <div className="bg-gray-50 p-6 rounded-lg border text-center text-gray-500">
-                            <p>Please <Link to="/login" className="text-blue-500 underline">log in</Link> to leave a review.</p>
+                            <p>{t("single.loginToReview").split('log in')[0]} <Link to="/login" className="text-blue-500 underline">{t("login.loginLink")}</Link> {t("single.loginToReview").split('log in')[1]}</p>
                         </div>
                     )}
                 </div>
@@ -208,8 +210,8 @@ const SingleBook = () => {
             {/* Association Rule Recommendations */}
             {book?.recommendedBooks?.length > 0 && (
                 <div className="mt-12 border-t pt-8">
-                    <h2 className="text-2xl font-bold mb-2">Customers Who Bought This Also Bought</h2>
-                    <p className="text-sm text-gray-400 mb-6">Powered by Market Basket Analysis</p>
+                    <h2 className="text-2xl font-bold mb-2">{t("single.alsoBought")}</h2>
+                    <p className="text-sm text-gray-400 mb-6">{t("single.mbaPowered")}</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {book.recommendedBooks.map((rec) => (
                             <Link

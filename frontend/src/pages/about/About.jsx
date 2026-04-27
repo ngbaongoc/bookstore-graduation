@@ -1,47 +1,49 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaBookOpen, FaTruck, FaHeadset, FaShieldAlt } from 'react-icons/fa'
-
-const stats = [
-    { label: 'Books Available', value: '10,000+' },
-    { label: 'Happy Customers', value: '5,000+' },
-    { label: 'Orders Delivered', value: '15,000+' },
-    { label: 'Years of Service', value: '5+' },
-]
-
-const values = [
-    {
-        icon: <FaBookOpen className="text-3xl text-[#008080]" />,
-        title: 'Curated Collection',
-        description: 'Every book in our store is carefully selected to ensure quality content that inspires, educates, and entertains.',
-    },
-    {
-        icon: <FaTruck className="text-3xl text-[#008080]" />,
-        title: 'Fast Delivery',
-        description: 'We partner with trusted logistics providers to deliver your books safely and swiftly to your doorstep.',
-    },
-    {
-        icon: <FaShieldAlt className="text-3xl text-[#008080]" />,
-        title: 'Best Prices',
-        description: 'Enjoy competitive pricing and regular promotions. Great books should be accessible to everyone.',
-    },
-    {
-        icon: <FaHeadset className="text-3xl text-[#008080]" />,
-        title: '24/7 Support',
-        description: 'Our dedicated support team is always ready to help you with any questions or concerns.',
-    },
-]
+import { useTranslation } from 'react-i18next'
 
 const About = () => {
+    const { t } = useTranslation();
+
+    const stats = [
+        { label: t('about.statsBooks'), value: '10,000+' },
+        { label: t('about.statsCustomers'), value: '5,000+' },
+        { label: t('about.statsOrders'), value: '15,000+' },
+        { label: t('about.statsService'), value: '5+' },
+    ]
+
+    const values = [
+        {
+            icon: <FaBookOpen className="text-3xl text-[#008080]" />,
+            title: t('about.valueCollection'),
+            description: t('about.valueCollectionDesc'),
+        },
+        {
+            icon: <FaTruck className="text-3xl text-[#008080]" />,
+            title: t('about.valueDelivery'),
+            description: t('about.valueDeliveryDesc'),
+        },
+        {
+            icon: <FaShieldAlt className="text-3xl text-[#008080]" />,
+            title: t('about.valuePrices'),
+            description: t('about.valuePricesDesc'),
+        },
+        {
+            icon: <FaHeadset className="text-3xl text-[#008080]" />,
+            title: t('about.valueSupport'),
+            description: t('about.valueSupportDesc'),
+        },
+    ]
+
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
             <section className="bg-gradient-to-br from-[#008080] to-[#005f5f] text-white py-20 px-4 rounded-2xl">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-6">About Our Bookstore</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('about.heroTitle')}</h1>
                     <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                        We believe that books have the power to change lives. Our mission is to connect readers
-                        with stories that inspire, educate, and spark imagination.
+                        {t('about.heroDesc')}
                     </p>
                 </div>
             </section>
@@ -51,26 +53,22 @@ const About = () => {
                 <div className="max-w-4xl mx-auto">
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         <div>
-                            <h2 className="text-3xl font-bold text-gray-800 mb-6">Our Story</h2>
+                            <h2 className="text-3xl font-bold text-gray-800 mb-6">{t('about.storyTitle')}</h2>
                             <p className="text-gray-600 leading-relaxed mb-4">
-                                Founded with a simple idea — to make quality books accessible to everyone — our bookstore
-                                has grown from a small passion project into a thriving community of book lovers.
+                                {t('about.storyPara1')}
                             </p>
                             <p className="text-gray-600 leading-relaxed mb-4">
-                                We started by curating a small collection of must-read titles and have since expanded
-                                to offer thousands of books across every genre imaginable. From timeless classics to
-                                the latest bestsellers, we have something for every reader.
+                                {t('about.storyPara2')}
                             </p>
                             <p className="text-gray-600 leading-relaxed">
-                                What sets us apart is our dedication to the reading experience. We don't just sell books
-                                — we help you discover your next favorite story.
+                                {t('about.storyPara3')}
                             </p>
                         </div>
                         <div className="bg-gray-50 rounded-2xl p-8 flex items-center justify-center">
                             <div className="text-center">
                                 <span className="text-8xl">📚</span>
-                                <p className="mt-4 text-gray-500 italic text-lg">"A reader lives a thousand lives before he dies."</p>
-                                <p className="text-gray-400 mt-2">— George R.R. Martin</p>
+                                <p className="mt-4 text-gray-500 italic text-lg">"{t('about.quote')}"</p>
+                                <p className="text-gray-400 mt-2">— {t('about.quoteAuthor')}</p>
                             </div>
                         </div>
                     </div>
@@ -80,7 +78,7 @@ const About = () => {
             {/* Stats */}
             <section className="bg-gray-50 py-16 px-4 rounded-2xl">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-3xl font-bold text-gray-800 text-center mb-12">By the Numbers</h2>
+                    <h2 className="text-3xl font-bold text-gray-800 text-center mb-12">{t('about.statsTitle')}</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {stats.map((stat, index) => (
                             <div key={index} className="text-center">
@@ -95,9 +93,9 @@ const About = () => {
             {/* Core Values */}
             <section className="py-16 px-4">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-3xl font-bold text-gray-800 text-center mb-4">Why Choose Us</h2>
+                    <h2 className="text-3xl font-bold text-gray-800 text-center mb-4">{t('about.chooseTitle')}</h2>
                     <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto">
-                        We're committed to providing the best experience for every book lover.
+                        {t('about.chooseDesc')}
                     </p>
                     <div className="grid sm:grid-cols-2 gap-8">
                         {values.map((value, index) => (
@@ -116,13 +114,13 @@ const About = () => {
             {/* CTA */}
             <section className="bg-gradient-to-br from-[#008080] to-[#005f5f] text-white py-16 px-4 rounded-2xl mb-4">
                 <div className="max-w-2xl mx-auto text-center">
-                    <h2 className="text-3xl font-bold mb-4">Ready to Find Your Next Read?</h2>
-                    <p className="text-white/80 mb-8">Browse our collection and discover books that will captivate your mind.</p>
+                    <h2 className="text-3xl font-bold mb-4">{t('about.ctaTitle')}</h2>
+                    <p className="text-white/80 mb-8">{t('about.ctaDesc')}</p>
                     <Link
                         to="/"
                         className="inline-block bg-white text-[#008080] font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors duration-300"
                     >
-                        Explore Books
+                        {t('about.ctaButton')}
                     </Link>
                 </div>
             </section>

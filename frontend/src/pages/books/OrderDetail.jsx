@@ -40,7 +40,7 @@ const OrderDetail = () => {
 
     const currentStatus = order.status || 'Pending'
     const currentIndex = STAGES.indexOf(currentStatus) >= 0 ? STAGES.indexOf(currentStatus) : 0
-    const canCancel = currentStatus !== 'Delivery' && !order.cancelRequest?.requested && !order.cancelOrder
+    const canCancel = currentStatus === 'Pending' && !order.cancelRequest?.requested && !order.cancelOrder
 
     const handleSubmitCancel = async () => {
         const reason = selectedReason === 'Other' ? otherReason.trim() : selectedReason

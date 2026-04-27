@@ -28,7 +28,6 @@ const reviewRoutes = require('./src/reviews/review.route')
 const blogRoutes = require('./src/blogs/blog.route')
 const inventoryRoutes = require('./src/inventory/inventory.route')
 const statsRoutes = require('./src/stats/stats.route')
-const initAbandonedCartCron = require('./src/orders/orderCron')
 app.use("/api/books", bookRoutes)
 app.use("/api", uploadRouter)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -40,6 +39,9 @@ app.use("/api/blogs", blogRoutes)
 app.use("/api/inventory", inventoryRoutes)
 app.use("/api/stats", statsRoutes)
 
+const initInventoryLockCron = require('./src/crons/inventoryCron');
+const initRfmCron = require('./src/crons/rfmCron');
+
 async function main() {
     await mongoose.connect(process.env.DB_URL);
     app.get("/", (req, res) => {
@@ -49,7 +51,8 @@ async function main() {
 
 main().then(() => {
     console.log("MongoDB connected successfully!");
-    initAbandonedCartCron();
+    initInventoryLockCron();
+    initRfmCron();
 }).catch(err => console.log(err));
 
 app.listen(port, () => {

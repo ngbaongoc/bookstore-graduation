@@ -8,8 +8,10 @@ import { useAuth } from '../../context/AuthContext'
 import formatCurrency from '../../utils/formatCurrency'
 import { getImgUrl } from '../../utils/getImgUrl'
 import { FiLock, FiArrowLeft, FiCheckCircle } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 
 const CheckoutPage = () => {
+    const { t } = useTranslation();
     const { currentUser, userProfile, loading, profileLoading } = useAuth();
     const cartItems = useSelector(state => state.cart.cartItems);
     const totalPrice = cartItems.reduce((acc, item) => acc + (item.newPrice || item.price) * (item.quantity || 1), 0).toFixed(0);
@@ -51,7 +53,7 @@ const CheckoutPage = () => {
     const handlePlaceOrder = async (e) => {
         e.preventDefault();
         if (!isChecked) {
-            Swal.fire("Warning", "Please agree to the Terms & Conditions", "warning");
+            Swal.fire(t("checkout.warning"), t("checkout.warningTerms"), "warning");
             return;
         }
 
@@ -75,8 +77,8 @@ const CheckoutPage = () => {
             await createOrder(orderData).unwrap();
             dispatch(clearCart());
             Swal.fire({
-                title: "Order Placed!",
-                text: "Your order has been placed successfully.",
+                title: t("checkout.orderPlaced"),
+                text: t("checkout.orderSuccess"),
                 icon: "success",
                 confirmButtonText: "OK",
                 confirmButtonColor: "#008080"
@@ -85,7 +87,7 @@ const CheckoutPage = () => {
             });
         } catch (error) {
             console.error("Failed to place order", error);
-            Swal.fire("Error", "Failed to place order. Please try again.", "error");
+            Swal.fire(t("common.error"), t("checkout.deleteError"), "error");
         }
     }
 
@@ -93,7 +95,7 @@ const CheckoutPage = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#008080] mb-4"></div>
-                <p className="text-gray-500">Loading your profile...</p>
+                <p className="text-gray-500">{t("checkout.loadingProfile")}</p>
             </div>
         )
     }
@@ -104,7 +106,7 @@ const CheckoutPage = () => {
                 <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6">
                     <span className="text-4xl">👤</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Profile Required</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{t("checkout.profileRequired")}</h2>
                 <p className="text-gray-500 mb-6 max-w-md">Please complete your profile (Username, Phone Number) before placing an order.</p>
                 <Link to="/settings" className="bg-[#008080] hover:bg-[#006666] text-white font-bold px-8 py-3 rounded-xl transition-colors">
                     Go to Settings
@@ -119,10 +121,10 @@ const CheckoutPage = () => {
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                     <span className="text-4xl">🛒</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Your cart is empty</h2>
-                <p className="text-gray-500 mb-6">Add some books before checking out.</p>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{t("cart.emptyTitle")}</h2>
+                <p className="text-gray-500 mb-6">{t("cart.emptyDesc")}</p>
                 <Link to="/" className="bg-[#008080] hover:bg-[#006666] text-white font-bold px-8 py-3 rounded-xl transition-colors">
-                    Browse Books
+                    {t("cart.browseBooks")}
                 </Link>
             </div>
         )
@@ -132,10 +134,10 @@ const CheckoutPage = () => {
         <div className="max-w-5xl mx-auto px-4 py-8">
             {/* Back link */}
             <Link to="/cart" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#008080] mb-6 transition-colors">
-                <FiArrowLeft /> Back to Cart
+                <FiArrowLeft /> {t("checkout.backToCart")}
             </Link>
 
-            <h1 className="text-2xl font-bold text-gray-800 mb-8">Checkout</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-8">{t("checkout.title")}</h1>
 
             <div className="grid lg:grid-cols-5 gap-8">
                 {/* Form */}
@@ -145,11 +147,11 @@ const CheckoutPage = () => {
                         <div className="bg-white rounded-2xl border border-gray-100 p-6">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="w-8 h-8 bg-[#008080] rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
-                                <h2 className="font-bold text-gray-800">Personal Details</h2>
+                                <h2 className="font-bold text-gray-800">{t("checkout.stepPersonal")}</h2>
                             </div>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelFullName")}</label>
                                     <input
                                         type="text" name="name"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
@@ -159,22 +161,22 @@ const CheckoutPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelEmail")}</label>
                                     <input
                                         type="email" name="email"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
-                                        placeholder="email@domain.com"
+                                        placeholder={t("checkout.placeholderEmail")}
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelPhone")}</label>
                                     <input
                                         type="tel" name="phone"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
-                                        placeholder="+84 xxx xxx xxx"
+                                        placeholder={t("checkout.placeholderPhone")}
                                         value={formData.phone}
                                         onChange={handleInputChange}
                                         required
@@ -187,59 +189,59 @@ const CheckoutPage = () => {
                         <div className="bg-white rounded-2xl border border-gray-100 p-6">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="w-8 h-8 bg-[#008080] rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
-                                <h2 className="font-bold text-gray-800">Shipping Address</h2>
+                                <h2 className="font-bold text-gray-800">{t("checkout.stepShipping")}</h2>
                             </div>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Street Address</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelStreet")}</label>
                                     <input
                                         type="text" name="street"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
-                                        placeholder="123 Nguyen Hue Street"
+                                        placeholder={t("checkout.placeholderStreet")}
                                         value={formData.street}
                                         onChange={handleInputChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">City</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelCity")}</label>
                                     <input
                                         type="text" name="city"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
-                                        placeholder="Da Nang"
+                                        placeholder={t("checkout.placeholderCity")}
                                         value={formData.city}
                                         onChange={handleInputChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">State / Province</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelState")}</label>
                                     <input
                                         type="text" name="state"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
-                                        placeholder="Hai Chau"
+                                        placeholder={t("checkout.placeholderState")}
                                         value={formData.state}
                                         onChange={handleInputChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Country</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelCountry")}</label>
                                     <input
                                         type="text" name="country"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
-                                        placeholder="Vietnam"
+                                        placeholder={t("checkout.placeholderCountry")}
                                         value={formData.country}
                                         onChange={handleInputChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Zipcode</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("checkout.labelZipcode")}</label>
                                     <input
                                         type="text" name="zipcode"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#008080] focus:ring-2 focus:ring-[#008080]/20 outline-none transition-all text-sm bg-gray-50"
-                                        placeholder="550000"
+                                        placeholder={t("checkout.placeholderZipcode")}
                                         value={formData.zipcode}
                                         onChange={handleInputChange}
                                         required
@@ -252,12 +254,12 @@ const CheckoutPage = () => {
                         <div className="bg-white rounded-2xl border border-gray-100 p-6">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="w-8 h-8 bg-[#008080] rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
-                                <h2 className="font-bold text-gray-800">Payment</h2>
+                                <h2 className="font-bold text-gray-800">{t("checkout.stepPayment")}</h2>
                             </div>
 
                             <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-5">
-                                <p className="text-sm text-amber-700 font-medium">Cash on Delivery (COD)</p>
-                                <p className="text-xs text-amber-600 mt-0.5">Pay when you receive your order.</p>
+                                <p className="text-sm text-amber-700 font-medium">{t("checkout.paymentCod")}</p>
+                                <p className="text-xs text-amber-600 mt-0.5">{t("checkout.paymentCodDesc")}</p>
                             </div>
 
                             <div className="flex items-start gap-3 mb-6">
@@ -269,7 +271,7 @@ const CheckoutPage = () => {
                                     onChange={() => setIsChecked(!isChecked)}
                                 />
                                 <label htmlFor="terms" className="text-sm text-gray-600">
-                                    I agree to the <span className="text-[#008080] font-medium">Terms & Conditions</span> and <span className="text-[#008080] font-medium">Shopping Policy</span>.
+                                    {t("checkout.agreeTerms")} <span className="text-[#008080] font-medium">{t("checkout.terms")}</span> {t("checkout.and")} <span className="text-[#008080] font-medium">{t("checkout.shoppingPolicy")}</span>.
                                 </label>
                             </div>
 
@@ -281,12 +283,12 @@ const CheckoutPage = () => {
                                 {isLoading ? (
                                     <>
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                        Placing Order...
+                                        {t("checkout.placingOrder")}
                                     </>
                                 ) : (
                                     <>
                                         <FiLock className="text-sm" />
-                                        Place Order — {formatCurrency(totalPrice)}
+                                        {t("checkout.placeOrder")} — {formatCurrency(totalPrice)}
                                     </>
                                 )}
                             </button>
@@ -297,7 +299,7 @@ const CheckoutPage = () => {
                 {/* Order Summary Sidebar */}
                 <div className="lg:col-span-2">
                     <div className="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24">
-                        <h3 className="font-bold text-gray-800 mb-5">Order Summary</h3>
+                        <h3 className="font-bold text-gray-800 mb-5">{t("cart.summaryTitle")}</h3>
 
                         {/* Items */}
                         <div className="space-y-4 max-h-80 overflow-y-auto pr-1">
@@ -327,15 +329,15 @@ const CheckoutPage = () => {
                         {/* Totals */}
                         <div className="border-t border-gray-100 mt-5 pt-5 space-y-3 text-sm">
                             <div className="flex justify-between text-gray-500">
-                                <span>Subtotal ({totalQuantity} items)</span>
+                                <span>{t("cart.subtotalCount", { count: totalQuantity })}</span>
                                 <span>{formatCurrency(totalPrice)}</span>
                             </div>
                             <div className="flex justify-between text-gray-500">
-                                <span>Shipping</span>
-                                <span className="text-[#008080] font-medium">Free</span>
+                                <span>{t("cart.shipping")}</span>
+                                <span className="text-[#008080] font-medium">{t("cart.free")}</span>
                             </div>
                             <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-800 text-lg">
-                                <span>Total</span>
+                                <span>{t("cart.total")}</span>
                                 <span className="text-[#008080]">{formatCurrency(totalPrice)}</span>
                             </div>
                         </div>
@@ -344,15 +346,15 @@ const CheckoutPage = () => {
                         <div className="border-t border-gray-100 mt-5 pt-5 space-y-2">
                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                 <FiCheckCircle className="text-green-500" />
-                                <span>Secure checkout</span>
+                                <span>{t("checkout.trustSecure")}</span>
                             </div>
                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                 <FiCheckCircle className="text-green-500" />
-                                <span>Free shipping nationwide</span>
+                                <span>{t("checkout.trustFreeShipping")}</span>
                             </div>
                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                 <FiCheckCircle className="text-green-500" />
-                                <span>Easy returns within 30 days</span>
+                                <span>{t("checkout.trustReturns")}</span>
                             </div>
                         </div>
                     </div>

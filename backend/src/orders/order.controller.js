@@ -204,8 +204,8 @@ const requestCancelOrder = async (req, res) => {
         const order = await Order.findById(id);
         if (!order) return res.status(404).json({ message: "Order not found" });
         if (order.cancelOrder) return res.status(400).json({ message: "Order is already cancelled" });
-        if (['Delivery', 'Delivered'].includes(order.status)) {
-            return res.status(400).json({ message: "Cannot cancel a delivered order" });
+        if (order.status !== 'Pending') {
+            return res.status(400).json({ message: "Order cancellation is only allowed while the order is in Pending status." });
         }
 
         order.cancelRequested = true;

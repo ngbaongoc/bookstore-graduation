@@ -5,6 +5,7 @@ const blogSchema = new mongoose.Schema({
     description: { type: String, required: true },
     category: { type: String },
     author: { type: String, required: true },
+    language: { type: String, enum: ['en', 'vi'], default: 'en' },
     coverImage: { type: String },
     createdAt: { type: Date, default: Date.now }
 }, { timestamps: true });

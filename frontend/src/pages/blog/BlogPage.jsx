@@ -2,19 +2,28 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFetchAllBlogsQuery } from '../../redux/features/blogs/blogsApi'
 import BlogCard from '../../components/BlogCard'
+import { useTranslation } from 'react-i18next'
 
 const BlogPage = () => {
-    const { data: blogs = [], isLoading, isError } = useFetchAllBlogsQuery()
-    const [selectedCategory, setSelectedCategory] = useState('All')
+    const { t, i18n } = useTranslation();
+    const { data: allBlogs = [], isLoading, isError } = useFetchAllBlogsQuery()
+    
+    // Filter blogs by language
+    const blogs = allBlogs.filter(blog => {
+        const blogLang = blog.language || 'en';
+        return blogLang === i18n.language;
+    });
 
-    const categories = ['All', ...new Set(blogs.map(b => b.category).filter(Boolean))]
-    const filteredBlogs = selectedCategory === 'All'
+    const [selectedCategory, setSelectedCategory] = useState(t('blog.allCategory'))
+
+    const categories = [t('blog.allCategory'), ...new Set(blogs.map(b => b.category).filter(Boolean))]
+    const filteredBlogs = selectedCategory === t('blog.allCategory')
         ? blogs
         : blogs.filter(b => b.category === selectedCategory)
 
     // Featured blog = most recent
     const featuredBlog = blogs[0]
-    const remainingBlogs = selectedCategory === 'All'
+    const remainingBlogs = selectedCategory === t('blog.allCategory')
         ? filteredBlogs.slice(1)
         : filteredBlogs
 
@@ -25,7 +34,7 @@ const BlogPage = () => {
     )
 
     if (isError) return (
-        <div className="text-center py-20 text-gray-500">Failed to load blog posts. Please try again later.</div>
+        <div className="text-center py-20 text-gray-500">{t('blog.loadingError')}</div>
     )
 
     return (
@@ -33,18 +42,18 @@ const BlogPage = () => {
             {/* Hero Header */}
             <section className="bg-gradient-to-br from-[#008080] to-[#005f5f] text-white py-16 px-4 rounded-2xl mb-12">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Blog</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{t('blog.heroTitle')}</h1>
                     <p className="text-white/80 text-lg max-w-xl mx-auto">
-                        Book reviews, reading tips, new arrivals, and stories from our community of book lovers.
+                        {t('blog.heroDesc')}
                     </p>
                 </div>
             </section>
 
             <div className="max-w-6xl mx-auto px-4 pb-16">
                 {/* Featured Post */}
-                {featuredBlog && selectedCategory === 'All' && (
+                {featuredBlog && selectedCategory === t('blog.allCategory') && (
                     <section className="mb-16">
-                        <h2 className="text-sm font-semibold text-[#008080] uppercase tracking-wider mb-6">Featured Post</h2>
+                        <h2 className="text-sm font-semibold text-[#008080] uppercase tracking-wider mb-6">{t('blog.featuredTitle')}</h2>
                         <Link to={`/blog/${featuredBlog._id}`} className="group block">
                             <div className="grid md:grid-cols-2 gap-8 bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
                                 <div className="h-64 md:h-full min-h-[280px]">
@@ -74,7 +83,7 @@ const BlogPage = () => {
                                         <div>
                                             <p className="text-sm font-medium text-gray-700">{featuredBlog.author}</p>
                                             <p className="text-xs text-gray-400">
-                                                {featuredBlog.createdAt && new Date(featuredBlog.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                                {featuredBlog.createdAt && new Date(featuredBlog.createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                             </p>
                                         </div>
                                     </div>
@@ -106,13 +115,13 @@ const BlogPage = () => {
                 {/* Blog Grid */}
                 <section>
                     <h2 className="text-sm font-semibold text-[#008080] uppercase tracking-wider mb-6">
-                        {selectedCategory === 'All' ? 'All Posts' : selectedCategory}
+                        {selectedCategory === t('blog.allCategory') ? t('blog.allPosts') : selectedCategory}
                     </h2>
-                    {(selectedCategory === 'All' ? remainingBlogs : filteredBlogs).length === 0 ? (
+                    {(selectedCategory === t('blog.allCategory') ? remainingBlogs : filteredBlogs).length === 0 ? (
                         <div className="text-center py-20 bg-gray-50 rounded-2xl">
                             <p className="text-6xl mb-4">📝</p>
                             <p className="text-xl text-gray-400">
-                                {blogs.length === 0 ? 'No posts yet. Check back soon!' : 'No posts in this category.'}
+                                {blogs.length === 0 ? t('blog.noPosts') : t('blog.noPostsCategory')}
                             </p>
                         </div>
                     ) : (

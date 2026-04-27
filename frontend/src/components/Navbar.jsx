@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { FaBell, FaShoppingCart, FaUser, FaGlobe } from "react-icons/fa";
 import { HiMenu, HiX } from "react-icons/hi";
+import { useTranslation } from 'react-i18next';
 import logo from '../assets/logo.png';
 
 import { useAuth } from '../context/AuthContext';
@@ -21,19 +22,26 @@ const Navbar = () => {
     const { data: alerts } = useGetInventoryAlertsQuery(undefined, { skip: !isAdmin, pollingInterval: 60000 });
     const totalAlerts = (alerts?.lowStockBooksCount || 0) + (alerts?.newOrdersCount || 0);
 
+    const { t, i18n } = useTranslation();
+
     const navLinks = [
-        { name: "Home", href: "/" },
-        { name: "Products", href: "/books" },
-        { name: "About us", href: "/about" },
-        { name: "Blog", href: "/blog" },
-        { name: "Contact", href: "/contact" },
+        { name: t("nav.home"), href: "/" },
+        { name: t("nav.products"), href: "/books" },
+        { name: t("nav.about"), href: "/about" },
+        { name: t("nav.blog"), href: "/blog" },
+        { name: t("nav.contact"), href: "/contact" },
     ];
 
     const userNavigation = [
-        { name: "My Orders", href: "/orders" },
-        { name: "Cart Page", href: "/cart" },
-        ...(currentUser ? [{ name: "Settings", href: "/settings" }] : []),
+        { name: t("nav.myOrders"), href: "/orders" },
+        { name: t("nav.cartPage"), href: "/cart" },
+        ...(currentUser ? [{ name: t("nav.settings"), href: "/settings" }] : []),
     ];
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'en' ? 'vi' : 'en';
+        i18n.changeLanguage(newLang);
+    };
 
     const handleLogOut = () => {
         logoutUser();
@@ -67,10 +75,13 @@ const Navbar = () => {
                             </Link>
                         ))}
                         
-                        {/* Language Selector (Placeholder) */}
-                        <button className="flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-[#008080] transition-colors">
+                        {/* Language Selector */}
+                        <button 
+                            onClick={toggleLanguage}
+                            className="flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-[#008080] transition-colors"
+                        >
                             <FaGlobe className="text-xs" />
-                            <span>Language</span>
+                            <span>{i18n.language === 'en' ? 'EN' : 'VI'}</span>
                         </button>
 
                         {/* Functional Icons */}
@@ -129,7 +140,7 @@ const Navbar = () => {
                                                     </Link>
                                                 ))}
                                                 <button onClick={handleLogOut} className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 border-t mt-1">
-                                                    Logout
+                                                    {t("nav.logout")}
                                                 </button>
                                             </div>
                                         )}
@@ -182,8 +193,10 @@ const Navbar = () => {
                         </Link>
                     ))}
                     <div className="pt-4 border-t border-gray-100 flex gap-4 px-3">
-                         <Link to="/login" className="text-sm font-bold text-gray-800">Account</Link>
-                         <button className="text-sm font-bold text-gray-600">Language</button>
+                         <Link to="/login" className="text-sm font-bold text-gray-800">{t("nav.account")}</Link>
+                         <button onClick={toggleLanguage} className="text-sm font-bold text-gray-600">
+                             {t("nav.language")}: {i18n.language === 'en' ? 'EN' : 'VI'}
+                         </button>
                     </div>
                 </div>
             )}

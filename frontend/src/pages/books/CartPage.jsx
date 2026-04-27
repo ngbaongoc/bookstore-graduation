@@ -5,8 +5,10 @@ import { getImgUrl } from '../../utils/getImgUrl';
 import { clearCart, removeFromCart, updateQuantity } from '../../redux/features/cart/cartSlice';
 import formatCurrency from '../../utils/formatCurrency';
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiArrowLeft } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 
 const CartPage = () => {
+    const { t } = useTranslation();
     const cartItems = useSelector(state => state.cart.cartItems);
     const dispatch = useDispatch();
 
@@ -31,10 +33,10 @@ const CartPage = () => {
                 <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                     <FiShoppingBag className="text-4xl text-gray-400" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Your cart is empty</h2>
-                <p className="text-gray-500 mb-8">Looks like you haven't added any books yet.</p>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{t("cart.emptyTitle")}</h2>
+                <p className="text-gray-500 mb-8">{t("cart.emptyDesc")}</p>
                 <Link to="/" className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-xl transition-colors">
-                    Browse Books
+                    {t("cart.browseBooks")}
                 </Link>
             </div>
         )
@@ -45,15 +47,15 @@ const CartPage = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Shopping Cart</h1>
-                    <p className="text-sm text-gray-500 mt-1">{totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}</p>
+                    <h1 className="text-2xl font-bold text-gray-800">{t("cart.title")}</h1>
+                    <p className="text-sm text-gray-500 mt-1">{totalQuantity} {totalQuantity === 1 ? t("cart.itemSingle") : t("cart.itemPlural")}</p>
                 </div>
                 <button
                     onClick={handleClearCart}
                     className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1.5 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
                 >
                     <FiTrash2 className="text-sm" />
-                    Clear Cart
+                    {t("cart.clearCart")}
                 </button>
             </div>
 
@@ -114,19 +116,19 @@ const CartPage = () => {
                 {/* Order Summary */}
                 <div className="lg:col-span-1">
                     <div className="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24">
-                        <h3 className="font-bold text-gray-800 mb-4">Order Summary</h3>
+                        <h3 className="font-bold text-gray-800 mb-4">{t("cart.summaryTitle")}</h3>
 
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between text-gray-500">
-                                <span>Subtotal ({totalQuantity} items)</span>
+                                <span>{t("cart.subtotalCount", { count: totalQuantity })}</span>
                                 <span>{formatCurrency(totalPrice)}</span>
                             </div>
                             <div className="flex justify-between text-gray-500">
-                                <span>Shipping</span>
-                                <span className="text-[#008080] font-medium">Free</span>
+                                <span>{t("cart.shipping")}</span>
+                                <span className="text-[#008080] font-medium">{t("cart.free")}</span>
                             </div>
                             <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-800 text-base">
-                                <span>Total</span>
+                                <span>{t("cart.total")}</span>
                                 <span className="text-[#008080]">{formatCurrency(totalPrice)}</span>
                             </div>
                         </div>
@@ -135,7 +137,7 @@ const CartPage = () => {
                             to="/checkout"
                             className="mt-6 w-full bg-[#008080] hover:bg-[#006666] text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
                         >
-                            Proceed to Checkout
+                            {t("cart.checkout")}
                         </Link>
 
                         <Link
@@ -143,7 +145,7 @@ const CartPage = () => {
                             className="mt-3 w-full text-gray-500 hover:text-[#008080] font-medium py-2 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
                         >
                             <FiArrowLeft className="text-sm" />
-                            Continue Shopping
+                            {t("cart.continueShopping")}
                         </Link>
                     </div>
                 </div>

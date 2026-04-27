@@ -7,6 +7,7 @@ const AddBlog = () => {
         description: '',
         category: '',
         author: '',
+        language: 'en',
         coverImage: '',
     })
     const [successMsg, setSuccessMsg] = useState('')
@@ -27,7 +28,7 @@ const AddBlog = () => {
         try {
             await addBlog(form).unwrap()
             setSuccessMsg('Blog post created successfully!')
-            setForm({ title: '', description: '', category: '', author: '', coverImage: '' })
+            setForm({ title: '', description: '', category: '', author: '', language: 'en', coverImage: '' })
         } catch (err) {
             setErrorMsg('Failed to create blog post. ' + (err.data?.message || ''))
         }
@@ -88,13 +89,25 @@ const AddBlog = () => {
                             />
                         </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image URL</label>
-                        <input
-                            name="coverImage" value={form.coverImage} onChange={handleChange}
-                            className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-300 outline-none"
-                            placeholder="https://..."
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Language *</label>
+                            <select
+                                name="language" value={form.language} onChange={handleChange} required
+                                className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-300 outline-none bg-white"
+                            >
+                                <option value="en">English (EN)</option>
+                                <option value="vi">Vietnamese (VI)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image URL</label>
+                            <input
+                                name="coverImage" value={form.coverImage} onChange={handleChange}
+                                className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-300 outline-none"
+                                placeholder="https://..."
+                            />
+                        </div>
                     </div>
                     <button
                         type="submit" disabled={isAdding}
@@ -116,7 +129,7 @@ const AddBlog = () => {
                             <li key={blog._id} className="flex items-center justify-between py-3 text-sm">
                                 <div>
                                     <p className="font-medium text-gray-800">{blog.title}</p>
-                                    <p className="text-gray-400 text-xs">{blog.category} · By {blog.author}</p>
+                                    <p className="text-gray-400 text-xs"><span className="uppercase font-bold text-gray-500">[{blog.language === 'vi' ? 'VI' : 'EN'}]</span> {blog.category} · By {blog.author}</p>
                                 </div>
                                 <button
                                     onClick={() => handleDelete(blog._id)}
