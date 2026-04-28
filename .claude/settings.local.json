@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Read(//private/tmp/**)",
+      "Bash(lsof:*)",
+      "Bash(kill 37251)",
+      "Bash(node -e ':*)"
+    ]
+  }
+}
