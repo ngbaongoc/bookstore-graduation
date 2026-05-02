@@ -8,7 +8,8 @@ const uploadRouter = require('./upload');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 //Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors({
     origin: [
         'http://localhost:5173',
@@ -43,6 +44,8 @@ const initInventoryLockCron = require('./src/crons/inventoryCron');
 const initRfmCron = require('./src/crons/rfmCron');
 const initAbandonedCartCron = require('./src/orders/orderCron');
 const initEmailCron = require('./src/emails/emailCron');
+const { initWrappedEmailCron } = require('./src/crons/wrappedEmailCron');
+const { initMysteryEmailCron } = require('./src/crons/mysteryEmailCron');
 
 async function main() {
     await mongoose.connect(process.env.DB_URL);
@@ -57,6 +60,8 @@ main().then(() => {
     initRfmCron();
     initAbandonedCartCron();
     initEmailCron();
+    initWrappedEmailCron();
+    initMysteryEmailCron();
 }).catch(err => console.log(err));
 
 app.listen(port, () => {

@@ -32,7 +32,22 @@ const getReviewsByBookId = async (req, res) => {
     }
 };
 
+const getReviewsByUserEmail = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const reviews = await Review.find({ email: email })
+            .sort({ createdAt: -1 })
+            .populate('bookId', 'title thumbnail');
+
+        res.status(200).json(reviews);
+    } catch (error) {
+        console.error("Error fetching user reviews", error);
+        res.status(500).json({ message: "Failed to fetch user reviews" });
+    }
+};
+
 module.exports = {
     postReview,
-    getReviewsByBookId
+    getReviewsByBookId,
+    getReviewsByUserEmail
 };

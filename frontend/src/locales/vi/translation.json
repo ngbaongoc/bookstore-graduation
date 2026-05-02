@@ -14,6 +14,7 @@
     "language": "Ngôn ngữ",
     "account": "Tài khoản",
     "logout": "Đăng xuất",
+    "myProfile": "Hồ sơ của tôi",
     "myOrders": "Đơn hàng của tôi",
     "cartPage": "Giỏ hàng",
     "settings": "Cài đặt"
@@ -130,6 +131,8 @@
     "reviews": "Đánh giá",
     "reviewsCount": "({{count}} đánh giá)",
     "addToCart": "Thêm vào giỏ hàng",
+    "description": "Tóm tắt nội dung",
+    "noDescription": "Không có mô tả cho cuốn sách này.",
     "customerReviews": "Đánh giá của khách hàng",
     "postReview": "Đăng đánh giá",
     "yourRating": "Xếp hạng của bạn",
@@ -255,6 +258,6 @@
   },
   "banner": {
     "title": "Sách mới phát hành tuần này",
-    "description": "Đã đến lúc cập nhật danh sách đọc của bạn với một số bản phát hành mới nhất và hay nhất trong giới văn học. Từ những bộ phim giật gân thót tim đến những cuốn hồi ký hấp dẫn, những bản phát hành mới của tuần này đều mang đến điều gì đó cho tất cả mọi người."
+    "description": "Khám phá những tựa sách mới nhất vừa cập bến BookShare. Từ những áng văn chương kinh điển được làm mới đến những câu chuyện đương đại đầy hơi thở thời đại, mỗi cuốn sách đều là một hành trình đang chờ bạn mở lối."
   }
 }

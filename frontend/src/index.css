@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+body, button, input, select, textarea, .font-inter {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 body {
     background-color: white;
 }

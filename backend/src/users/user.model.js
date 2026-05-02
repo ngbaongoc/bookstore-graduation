@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
     segment: {
         type: String,
         default: 'No Orders'
+    },
+    readingGoal: {
+        type: Number,
+        default: 10
     }
 }, {
     timestamps: true

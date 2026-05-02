@@ -33,6 +33,7 @@ const Navbar = () => {
     ];
 
     const userNavigation = [
+        { name: t("nav.myProfile"), href: "/profile" },
         { name: t("nav.myOrders"), href: "/orders" },
         { name: t("nav.cartPage"), href: "/cart" },
         ...(currentUser ? [{ name: t("nav.settings"), href: "/settings" }] : []),

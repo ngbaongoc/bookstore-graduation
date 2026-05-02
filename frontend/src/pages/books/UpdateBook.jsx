@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 import { useFetchBookByIdQuery, useUpdateBookMutation } from '../../redux/features/books/booksApi'
 import { useForm } from "react-hook-form"
 import { MdArrowBack, MdCloudUpload } from 'react-icons/md'
 import getBaseUrl from '../../utils/baseURL'
+import { MOOD_OPTIONS } from './AddBook'
 
 const UpdateBook = () => {
     const { id } = useParams()
@@ -29,6 +31,9 @@ const UpdateBook = () => {
                 if (!book.thumbnail.startsWith('http')) {
                     setUploadedImagePath(book.thumbnail)
                 }
+            }
+            if (book.moods) {
+                setValue('moods', book.moods)
             }
         }
     }, [book, setValue])
@@ -62,6 +67,7 @@ const UpdateBook = () => {
         try {
             const updateData = {
                 ...data,
+                moods: data.moods || [],
                 thumbnail: uploadedImagePath || book.thumbnail,
                 id
             }
@@ -69,7 +75,20 @@ const UpdateBook = () => {
             alert("Book updated successfully")
             navigate('/admin') // Redirect back to inventory
         } catch (err) {
-            alert("Failed to update book: " + (err.data?.message || err.message))
+            if (err?.status === 401 || err?.status === 403) {
+                Swal.fire({
+                    title: 'Session Expired',
+                    text: 'Your security token has expired (it lasts 24 hours). Redirecting to login...',
+                    icon: 'warning',
+                    timer: 2500,
+                    showConfirmButton: false
+                }).then(() => {
+                    localStorage.removeItem('token');
+                    window.location.href = '/admin/login';
+                });
+            } else {
+                alert("Failed to update book: " + (err.data?.message || err.message))
+            }
         }
     }
 
@@ -138,6 +157,18 @@ const UpdateBook = () => {
                                 className="block w-full border border-gray-200 rounded-xl shadow-sm p-3.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                 placeholder="e.g. Fiction, Business"
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Moods / Vibes</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {MOOD_OPTIONS.map(mood => (
+                                    <label key={mood.id} className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+                                        <input type="checkbox" value={mood.id} {...register('moods')} className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4" />
+                                        <span className="text-sm text-gray-700">{mood.emoji} {mood.label}</span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
 
                         <div>

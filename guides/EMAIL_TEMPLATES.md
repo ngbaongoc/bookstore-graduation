@@ -25,13 +25,9 @@ The system uses the **Recency, Frequency, Monetary (RFM)** model to segment cust
 
 ## 📧 Email Templates & Campaigns
 
-There are **6 primary email templates** currently in use or implementation.
+There are **5 primary email templates** currently in use or implementation.
 
-### 1. VIP Reward Template
-- **Target Segments:** `Champions`, `Loyal Customers`
-- **Subject:** A little something for our favorite reader... 🎁
-- **Purpose:** Retention and rewarding high-value customers with a 20% "Champion Discount" and early access to new collections.
-- **Location:** `frontend/src/pages/dashboard/ManageUsers.jsx` (Dynamic Compose)
+
 
 ### 2. Recency Nudge Template
 - **Target Segments:** `New Customers`, `Potential Loyalist`, `Promising`

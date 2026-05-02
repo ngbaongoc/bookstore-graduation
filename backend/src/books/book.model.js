@@ -26,6 +26,13 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  summary: {
+    type: String,
+  },
+  moods: {
+    type: [String],
+    default: [],
+  },
   published_year: {
     type: Number,
     required: true,

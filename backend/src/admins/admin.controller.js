@@ -4,11 +4,13 @@ const bcrypt = require('bcrypt');
 const { getRFMAnalysis } = require('../orders/rfm_analysis');
 const sendEmail = require('../utils/sendEmail');
 const ScheduledEmail = require('../emails/scheduledEmail.model');
-
-const JWT_SECRET = process.env.JWT_SECRET_KEY
+const { runWrappedEmailCampaign } = require('../crons/wrappedEmailCron');
+const { buildWrappedStats, renderWrappedEmail } = require('../emails/wrappedEmail');
+const { buildMysteryDate, renderMysteryEmail } = require('../emails/mysteryEmail');
 
 const adminLogin = async (req, res) => {
     const { username, password } = req.body;
+    const JWT_SECRET = process.env.JWT_SECRET_KEY;
     try {
         const admin = await Admin.findOne({ username });
         if (!admin) {
@@ -23,7 +25,7 @@ const adminLogin = async (req, res) => {
         const token = jwt.sign(
             { id: admin._id, username: admin.username, role: admin.role },
             JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "24h" }
         )
 
         return res.status(200).send({
@@ -102,9 +104,62 @@ const composeSendEmail = async (req, res) => {
     }
 };
 
+const triggerWrappedCampaign = async (req, res) => {
+    try {
+        res.status(200).send({ message: "Reader's Wrapped campaign is now running in the background. Check server logs for progress." });
+        setImmediate(() => runWrappedEmailCampaign());
+    } catch (error) {
+        console.error("Failed to trigger Wrapped campaign", error);
+        res.status(500).send({ message: "Failed to trigger campaign" });
+    }
+};
+
+/**
+ * GET /api/admin/wrapped-preview/:userId
+ * Returns rendered Reader's Wrapped HTML for a specific user (for admin preview).
+ */
+const getWrappedPreview = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const year = new Date().getFullYear();
+        const stats = await buildWrappedStats(userId, year);
+        if (!stats) {
+            return res.status(404).json({ message: `No delivered orders found for userId "${userId}" in ${year}.` });
+        }
+        const html = renderWrappedEmail(stats);
+        res.status(200).json({ html, stats });
+    } catch (error) {
+        console.error("Failed to generate Wrapped preview", error);
+        res.status(500).send({ message: "Failed to generate preview" });
+    }
+};
+
+/**
+ * GET /api/admin/mystery-preview/:userId
+ * Returns rendered Mystery Book Date HTML for a specific user (for admin preview).
+ */
+const getMysteryPreview = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const mysteryData = await buildMysteryDate(userId);
+        if (!mysteryData || !mysteryData.bookId) {
+            return res.status(404).json({ message: `No suitable candidate books found for userId "${userId}".` });
+        }
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const html = renderMysteryEmail(mysteryData, frontendUrl);
+        res.status(200).json({ html, data: mysteryData });
+    } catch (error) {
+        console.error("Failed to generate Mystery Book preview", error);
+        res.status(500).send({ message: "Failed to generate preview" });
+    }
+};
+
 module.exports = {
     adminLogin,
     registerAdmin,
     getRFMReport,
-    composeSendEmail
+    composeSendEmail,
+    triggerWrappedCampaign,
+    getWrappedPreview,
+    getMysteryPreview
 }

@@ -18,7 +18,11 @@ export const reviewsApi = createApi({
             query: (bookId) => `/book/${bookId}`,
             providesTags: ['Reviews'], // Provide cache tag
         }),
+        getReviewsByUserEmail: builder.query({
+            query: (email) => `/user/${email}`,
+            providesTags: ['Reviews'], 
+        }),
     }),
 });
 
-export const { usePostReviewMutation, useGetReviewsByBookIdQuery } = reviewsApi;
+export const { usePostReviewMutation, useGetReviewsByBookIdQuery, useGetReviewsByUserEmailQuery } = reviewsApi;

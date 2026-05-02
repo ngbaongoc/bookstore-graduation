@@ -39,34 +39,34 @@ const BookCard = ({ book }) => {
             <div className="flex flex-col justify-between h-full text-left">
                 <div>
                     <Link to={`/books/${book._id}`}>
-                        <h3 className="text-xl font-semibold hover:text-blue-600 mb-2 line-clamp-2">
+                        <h3 className="text-lg font-bold hover:text-blue-600 mb-1">
                             {book?.title}
                         </h3>
                     </Link>
-                    <p className="text-gray-600 mb-4 text-sm">
-                        {book?.description?.length > 60 ? `${book.description.slice(0, 60)}...` : book?.description}
-                    </p>
                 </div>
 
-                <div>
-                    <p className="font-medium mb-4 text-gray-800">
+                <div className="flex items-center gap-3">
+                    <p className="font-bold text-gray-900">
                         {formatCurrency(price)}
-                        {oldPrice && <span className="line-through font-normal text-gray-400 ml-2">
+                        {oldPrice && <span className="line-through font-normal text-gray-400 text-xs ml-2">
                             {formatCurrency(oldPrice)}
                         </span>}
                     </p>
+                </div>
+
+                <div className="mt-4 flex items-center gap-2">
                     <button
                         onClick={() => handleAddToCart(book)}
-                        className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md flex items-center gap-2 transition-colors">
+                        className="bg-[#FFCE1A] hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md flex items-center gap-2 transition-all text-sm">
                         <FiShoppingCart />
-                        <span>Add to Cart</span>
+                        <span>Thêm vào giỏ</span>
                     </button>
                     <button
                         onClick={() => handleAddToWishlist(book)}
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2 rounded-md transition-colors"
-                        title="Add to wishlist"
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-md transition-colors"
+                        title="Yêu thích"
                     >
-                        <FaRegHeart className="w-5 h-5" />
+                        <FaRegHeart className="w-4 h-4" />
                     </button>
                 </div>
             </div>
