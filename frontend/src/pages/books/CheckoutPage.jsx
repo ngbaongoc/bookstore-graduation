@@ -87,7 +87,7 @@ const CheckoutPage = () => {
             });
         } catch (error) {
             console.error("Failed to place order", error);
-            Swal.fire(t("common.error"), t("checkout.deleteError"), "error");
+            Swal.fire(t("common.error"), error?.data?.message || t("checkout.orderFailed"), "error");
         }
     }
 

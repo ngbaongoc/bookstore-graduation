@@ -70,7 +70,11 @@ const placeOrder = async (bookId, quantityRequested) => {
     );
 
     if (!updatedInventory) {
-      return { success: false, message: "Insufficient stock on shelf." };
+      const existing = await Inventory.findOne({ bookId: bookId });
+      if (!existing) {
+        return { success: false, message: "This product has no inventory record. Please contact the administrator." };
+      }
+      return { success: false, message: `Insufficient stock. Available: ${existing.inHouseQuantity}, requested: ${quantityRequested}.` };
     }
 
     return { 

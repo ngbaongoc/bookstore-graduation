@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET_KEY
 const adminLogin = async (req, res) => {
     const { username, password } = req.body;
     try {
-        const admin = await Admin.findOne({ username });
+        const admin = await Admin.findOne({ $or: [{ username }, { email: username }] });
         if (!admin) {
             return res.status(404).send({ message: "Admin not found!" })
         }

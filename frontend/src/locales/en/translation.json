@@ -206,7 +206,8 @@
     "orderPlaced": "Order Placed!",
     "orderSuccess": "Your order has been placed successfully.",
     "warning": "Warning",
-    "warningTerms": "Please agree to the Terms & Conditions"
+    "warningTerms": "Please agree to the Terms & Conditions",
+    "orderFailed": "Failed to place order. Please try again later."
   },
   "orders": {
     "title": "My Orders History",

@@ -206,7 +206,8 @@
     "orderPlaced": "Đã đặt hàng!",
     "orderSuccess": "Đơn hàng của bạn đã được đặt thành công.",
     "warning": "Cảnh báo",
-    "warningTerms": "Vui lòng đồng ý với Điều khoản & Điều kiện"
+    "warningTerms": "Vui lòng đồng ý với Điều khoản & Điều kiện",
+    "orderFailed": "Đặt hàng thất bại. Vui lòng thử lại sau."
   },
   "orders": {
     "title": "Lịch sử đơn hàng của tôi",

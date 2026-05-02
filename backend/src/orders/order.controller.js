@@ -67,7 +67,7 @@ const createOrder = async (req, res) => {
                         }
                     );
                 }
-                return res.status(400).json({ message: `Insufficient stock for one of the items. ${result.message}` });
+                return res.status(400).json({ message: result.message });
             }
             reservedItems.push(item);
         }

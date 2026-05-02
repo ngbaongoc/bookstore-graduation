@@ -5,7 +5,11 @@
       "Read(//private/tmp/**)",
       "Bash(lsof:*)",
       "Bash(kill 37251)",
-      "Bash(node -e ':*)"
+      "Bash(node -e ':*)",
+      "Bash(node update-stock.js)",
+      "Bash(node:*)",
+      "Bash(xargs cat:*)",
+      "Bash(npm uninstall:*)"
     ]
   }
 }

@@ -31,7 +31,7 @@ const AddBook = () => {
 
             const data = await response.json()
             setUploadedImagePath(data.filePath)
-            setThumbnailPreview(`${getBaseUrl()}${data.filePath}`)
+            setThumbnailPreview(data.filePath.startsWith('http') ? data.filePath : `${getBaseUrl()}${data.filePath}`)
         } catch (error) {
             alert('Image upload failed: ' + error.message)
         }
