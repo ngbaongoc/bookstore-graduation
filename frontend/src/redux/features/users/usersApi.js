@@ -33,8 +33,26 @@ const usersApi = createApi({
                 body: { emails },
             }),
         }),
+        fetchUserByEmail: builder.query({
+            query: (email) => `/${email}`,
+            providesTags: (result, error, email) => [{ type: 'Users', id: email }],
+        }),
+        updateUserProfile: builder.mutation({
+            query: ({ email, ...updates }) => ({
+                url: `/${email}`,
+                method: 'PUT',
+                body: updates,
+            }),
+            invalidatesTags: (result, error, { email }) => [{ type: 'Users', id: email }, 'Users'],
+        }),
     }),
 });
 
-export const { useFetchAllUsersQuery, useDeleteUserMutation, useSendVouchersMutation } = usersApi;
+export const { 
+    useFetchAllUsersQuery, 
+    useDeleteUserMutation, 
+    useSendVouchersMutation,
+    useFetchUserByEmailQuery,
+    useUpdateUserProfileMutation
+} = usersApi;
 export default usersApi;

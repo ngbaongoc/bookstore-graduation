@@ -21,7 +21,7 @@ const AdminLogin = () => {
                 setTimeout(() => {
                     localStorage.removeItem('token')
                     checkAdmin();
-                }, 3600 * 1000)
+                }, 24 * 3600 * 1000)
             }
 
             navigate("/admin")

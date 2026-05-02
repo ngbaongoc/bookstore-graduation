@@ -29,6 +29,7 @@ import ComposeEmail from "../pages/dashboard/ComposeEmail";
 import ManageOrders from "../pages/dashboard/ManageOrders";
 import UserOrders from "../pages/dashboard/UserOrders";
 import IntelligenceDashboard from "../pages/dashboard/intelligence/IntelligenceDashboard";
+import UserProfile from "../pages/dashboard/UserProfile";
 
 import React from 'react';
 
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
             { path: "/cart", element: <CartPage /> },
             { path: "/checkout", element: <PrivateRoute><CheckoutPage /></PrivateRoute> },
             { path: "/settings", element: <PrivateRoute><UserSettings /></PrivateRoute> },
+            { path: "/profile", element: <PrivateRoute><UserProfile /></PrivateRoute> },
             { path: "/wishlist", element: <WishlistPage /> },
             { path: "/books/:id", element: <SingleBook /> },
             { path: "/blog", element: <BlogPage /> },

@@ -5,6 +5,18 @@ import { useNavigate } from 'react-router-dom'
 import { MdArrowBack, MdCloudUpload, MdCheckCircle } from 'react-icons/md'
 import getBaseUrl from '../../utils/baseURL'
 
+export const MOOD_OPTIONS = [
+    { id: 'bitter_reality', label: 'Trầm tư trước thời đại', emoji: '🔪' },
+    { id: 'existential_crisis', label: 'Khủng hoảng hiện sinh', emoji: '🌪️' },
+    { id: 'hanoi_polite', label: 'Lịch thiệp kiểu Hà Nội xưa', emoji: '🍵' },
+    { id: 'french_sadness', label: 'Buồn lơ lửng', emoji: '🍷' },
+    { id: 'urban_loneliness', label: 'Người cô đơn trong thành thị', emoji: '🏙️' },
+    { id: 'window_staring', label: 'Thế giới đi ngủ và bạn ngồi bên cửa sổ lúc một giờ sáng', emoji: '🌃' },
+    { id: 'german_cold', label: 'Khô lạnh như người Đức', emoji: '❄️' },
+    { id: 'noir_detective', label: 'Trinh thám kiểu phim noir', emoji: '🕵️' },
+    { id: 'not_on_earth', label: 'Đi tìm điều chưa có trên Trái Đất', emoji: '🚀' }
+]
+
 const AddBook = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm()
     const [addBook, { isLoading }] = useAddBookMutation()
@@ -41,6 +53,7 @@ const AddBook = () => {
         try {
             const bookData = {
                 ...data,
+                moods: data.moods || [],
                 thumbnail: uploadedImagePath || "https://via.placeholder.com/150",
                 published_year: parseInt(data.published_year),
                 num_pages: parseInt(data.num_pages),
@@ -134,6 +147,18 @@ const AddBook = () => {
                                     className="block w-full border border-gray-200 rounded-xl shadow-sm p-3.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all"
                                     placeholder={new Date().getFullYear()}
                                 />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Moods / Vibes</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {MOOD_OPTIONS.map(mood => (
+                                    <label key={mood.id} className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+                                        <input type="checkbox" value={mood.id} {...register('moods')} className="rounded text-[#008080] focus:ring-[#008080] w-4 h-4" />
+                                        <span className="text-sm text-gray-700">{mood.emoji} {mood.label}</span>
+                                    </label>
+                                ))}
                             </div>
                         </div>
 

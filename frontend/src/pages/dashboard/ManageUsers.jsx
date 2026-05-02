@@ -24,6 +24,7 @@ const ManageUsers = () => {
     const [deleteUser] = useDeleteUserMutation();
     const [sendVouchers, { isLoading: isSending }] = useSendVouchersMutation();
     const [selectedSegment, setSelectedSegment] = useState("All");
+    const [selectedUsers, setSelectedUsers] = useState([]);
 
     // Get unique segments from users for filter options
     const segments = useMemo(() => {
@@ -37,6 +38,50 @@ const ManageUsers = () => {
         if (selectedSegment === "All") return users;
         return users.filter(u => (u.segment || "No Orders") === selectedSegment);
     }, [users, selectedSegment]);
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedUsers(filteredUsers);
+        } else {
+            setSelectedUsers([]);
+        }
+    };
+
+    const handleSelectUser = (user, checked) => {
+        if (checked) {
+            setSelectedUsers(prev => [...prev, user]);
+        } else {
+            setSelectedUsers(prev => prev.filter(u => u._id !== user._id));
+        }
+    };
+
+    const handleBulkSendEmail = () => {
+        if (selectedUsers.length === 0) return;
+        const emails = selectedUsers.map(u => u.email).join(', ');
+        navigate('/admin/compose-email', { 
+            state: { 
+                email: emails, 
+                subject: "", 
+                body: "",
+                username: "Valued Customers",
+            } 
+        });
+    };
+
+    const handleBulkSendSeries = () => {
+        if (selectedUsers.length === 0) return;
+        navigate('/admin/compose-email', { 
+            state: { 
+                email: selectedUsers.map(u => u.email).join(', '),
+                subject: "",
+                body: "",
+                username: "Valued Customers",
+                openSeriesBuilder: true,
+                // Pass the full list so ComposeEmail can personalize each email
+                bulkRecipients: selectedUsers.map(u => ({ email: u.email, username: u.username })),
+            } 
+        });
+    };
 
     const handleDeleteUser = async (id) => {
         try {
@@ -86,7 +131,10 @@ const ManageUsers = () => {
             state: { 
                 email: user.email, 
                 subject: subject, 
-                body: body 
+                body: body,
+                userId: user.userId,
+                segment: segment,
+                username: user.username,
             } 
         });
     };
@@ -162,6 +210,26 @@ const ManageUsers = () => {
                             )}
                         </button>
                     )}
+                    <button
+                        onClick={handleBulkSendSeries}
+                        disabled={selectedUsers.length === 0}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:bg-blue-300 flex items-center gap-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Send Series ({selectedUsers.length})
+                    </button>
+                    <button
+                        onClick={handleBulkSendEmail}
+                        disabled={selectedUsers.length === 0}
+                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:bg-purple-300 flex items-center gap-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Send Email ({selectedUsers.length})
+                    </button>
                 </div>
             </div>
 
@@ -169,6 +237,14 @@ const ManageUsers = () => {
                 <table className="min-w-full divide-y divide-gray-200 text-sm">
                     <thead>
                         <tr className="bg-gray-50 text-gray-500 uppercase tracking-wider font-semibold">
+                            <th className="px-6 py-4 text-left">
+                                <input 
+                                    type="checkbox" 
+                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                    checked={filteredUsers.length > 0 && selectedUsers.length === filteredUsers.length}
+                                    onChange={handleSelectAll}
+                                />
+                            </th>
                             <th className="px-6 py-4 text-left">User ID</th>
                             <th className="px-6 py-4 text-left">Username</th>
                             <th className="px-6 py-4 text-left">Email</th>
@@ -180,7 +256,15 @@ const ManageUsers = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-100 bg-white">
                         {filteredUsers.map((user) => (
-                            <tr key={user._id} className="hover:bg-gray-50 transition-colors">
+                            <tr key={user._id} className={`hover:bg-gray-50 transition-colors ${selectedUsers.some(u => u._id === user._id) ? 'bg-blue-50/50' : ''}`}>
+                                <td className="px-6 py-4">
+                                    <input 
+                                        type="checkbox" 
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                        checked={selectedUsers.some(u => u._id === user._id)}
+                                        onChange={(e) => handleSelectUser(user, e.target.checked)}
+                                    />
+                                </td>
                                 <td className="px-6 py-4 font-mono text-xs text-blue-600">{user.userId}</td>
                                 <td className="px-6 py-4 font-medium text-gray-900">
                                     <Link to={`/admin/users/${user.userId}/orders`} className="hover:text-blue-600 hover:underline transition-colors cursor-pointer" title="View Delivered Orders">
@@ -210,7 +294,7 @@ const ManageUsers = () => {
                         ))}
                         {filteredUsers.length === 0 && (
                             <tr>
-                                <td colSpan="7" className="px-6 py-10 text-center text-gray-400 italic">
+                                <td colSpan="8" className="px-6 py-10 text-center text-gray-400 italic">
                                     No users found{selectedSegment !== "All" ? ` in "${selectedSegment}" segment` : " in the database"}.
                                 </td>
                             </tr>

@@ -3,6 +3,10 @@ import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi'
 import BookCard from '../home/BookCard'
 import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { useGetOrdersByEmailQuery } from '../../redux/features/orders/ordersApi'
+import { MOOD_OPTIONS as MOODS } from './AddBook'
 
 // Move SORT_OPTIONS inside component to use t()
 
@@ -10,6 +14,9 @@ const PAGE_SIZE = 12
 
 const BooksPage = () => {
     const { t } = useTranslation();
+    const [searchParams] = useSearchParams();
+    const { currentUser } = useAuth();
+    const excludePurchased = searchParams.get('excludePurchased') === 'true';
 
     const SORT_OPTIONS = [
         { label: t('books.sortNewest'), value: 'newest' },
@@ -20,9 +27,32 @@ const BooksPage = () => {
 
     const { data: books = [], isLoading, isError } = useFetchAllBooksQuery()
     const [search, setSearch] = useState('')
-    const [selectedCategory, setSelectedCategory] = useState(t('books.allCategory'))
+    // Pre-select the category from the ?category= URL query param (used by email CTAs)
+    const [selectedCategory, setSelectedCategory] = useState(
+        searchParams.get('category') || t('books.allCategory')
+    )
+    const [selectedMood, setSelectedMood] = useState(null)
     const [sortBy, setSortBy] = useState('newest')
     const [currentPage, setCurrentPage] = useState(1)
+
+    // Fetch the logged-in user's orders (only when excludePurchased flag is set)
+    const { data: userOrders = [] } = useGetOrdersByEmailQuery(
+        currentUser?.email,
+        { skip: !excludePurchased || !currentUser?.email }
+    );
+
+    // Build a Set of already-purchased book IDs
+    const purchasedBookIds = useMemo(() => {
+        if (!excludePurchased || !userOrders.length) return new Set();
+        const ids = new Set();
+        for (const order of userOrders) {
+            for (const item of order.productIds || []) {
+                const id = typeof item.productId === 'object' ? item.productId?._id : item.productId;
+                if (id) ids.add(String(id));
+            }
+        }
+        return ids;
+    }, [userOrders, excludePurchased]);
 
     // Dynamic categories from data
     const categories = useMemo(() => {
@@ -34,6 +64,11 @@ const BooksPage = () => {
     const filteredBooks = useMemo(() => {
         let result = [...books]
 
+        // Exclude already-purchased books when flag is set
+        if (excludePurchased && purchasedBookIds.size > 0) {
+            result = result.filter(b => !purchasedBookIds.has(String(b._id)))
+        }
+
         // Search
         if (search.trim()) {
             const q = search.toLowerCase()
@@ -44,8 +79,11 @@ const BooksPage = () => {
             )
         }
 
-        // Category
-        if (selectedCategory !== t('books.allCategory')) {
+        // Mood Filter (Higher priority than Category)
+        if (selectedMood) {
+            result = result.filter(b => b.moods && b.moods.includes(selectedMood))
+        } else if (selectedCategory !== t('books.allCategory')) {
+            // Category Filter
             result = result.filter(b => b.category === selectedCategory)
         }
 
@@ -67,13 +105,13 @@ const BooksPage = () => {
         }
 
         return result
-    }, [books, search, selectedCategory, sortBy])
+    }, [books, search, selectedCategory, selectedMood, sortBy, excludePurchased, purchasedBookIds])
 
     const totalPages = Math.ceil(filteredBooks.length / PAGE_SIZE)
     const displayedBooks = filteredBooks.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
     // Reset page when filters change
-    useEffect(() => { setCurrentPage(1) }, [search, selectedCategory, sortBy])
+    useEffect(() => { setCurrentPage(1) }, [search, selectedCategory, selectedMood, sortBy])
 
     // Effect to reset selectedCategory when language changes if it was "All"
     useEffect(() => {
@@ -140,7 +178,45 @@ const BooksPage = () => {
                 </div>
             </section>
 
+            {/* ── Personalised banner shown when arriving from email CTA ── */}
+            {excludePurchased && selectedCategory !== t('books.allCategory') && (
+                <div className="mx-auto max-w-6xl px-4 mb-4">
+                    <div className="flex items-center gap-3 bg-purple-50 border border-purple-200 text-purple-800 rounded-xl px-5 py-3 text-sm font-medium">
+                        <span className="text-lg">🎁</span>
+                        <span>Showing <strong>{selectedCategory}</strong> books you haven't read yet — just for you.</span>
+                    </div>
+                </div>
+            )}
+
             <div className="max-w-6xl mx-auto px-4 pb-16">
+                {/* Mood Bar */}
+                <div className="mb-10 text-center">
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Hôm nay bạn thấy thế nào?</p>
+                    <div className="flex flex-wrap justify-center gap-4">
+                        {MOODS.map((mood) => (
+                            <button
+                                key={mood.id}
+                                onClick={() => {
+                                    setSelectedMood(selectedMood === mood.id ? null : mood.id);
+                                    setSelectedCategory(t('books.allCategory'));
+                                }}
+                                className={`group flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300
+                                    ${selectedMood === mood.id
+                                        ? 'bg-[#008080] border-[#008080] shadow-lg scale-105'
+                                        : 'bg-white border-gray-100 hover:border-gray-200 hover:shadow-md'
+                                    }`}
+                            >
+                                <span className={`text-3xl transition-transform duration-300 group-hover:scale-110 ${selectedMood === mood.id ? 'scale-110' : ''}`}>
+                                    {mood.emoji}
+                                </span>
+                                <span className={`text-xs font-bold ${selectedMood === mood.id ? 'text-white' : 'text-gray-500'}`}>
+                                    {mood.label}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Category Filter Pills */}
                 <div className="flex flex-wrap gap-2 mb-6">
                     {categories.map((cat) => (

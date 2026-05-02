@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams, Link, useSearchParams } from 'react-router-dom'
+import Swal from 'sweetalert2'
 import { useDeleteBookMutation, useFetchBookByIdQuery } from '../../redux/features/books/booksApi'
 import { usePostReviewMutation, useGetReviewsByBookIdQuery } from '../../redux/features/reviews/reviewsApi'
 import { getImgUrl } from '../../utils/getImgUrl'
@@ -33,6 +34,7 @@ const SingleBook = () => {
     const { isAdmin, currentUser } = useAuth();
     const { id } = useParams()
     const navigate = useNavigate()
+    const [searchParams, setSearchParams] = useSearchParams()
     const { data: book, isLoading, isError } = useFetchBookByIdQuery(id)
     const { data: reviews = [], isLoading: isLoadingReviews } = useGetReviewsByBookIdQuery(id)
     const [deleteBook] = useDeleteBookMutation()
@@ -47,6 +49,37 @@ const SingleBook = () => {
     const handleAddToCart = (product) => {
         dispatch(addToCart(product));
     }
+
+    React.useEffect(() => {
+        if (searchParams.get('vote') === 'true') {
+            Swal.fire({
+                title: t('books.voteThanksTitle', 'Thanks for voting! 🎁'),
+                text: t('books.voteThanksDesc', 'Use code CURATE10 for 10% off your next purchase.'),
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Awesome!'
+            }).then(() => {
+                // Remove the vote and source params
+                searchParams.delete('vote');
+                searchParams.delete('source');
+                setSearchParams(searchParams, { replace: true });
+            });
+        }
+        
+        if (searchParams.get('mystery') === 'true') {
+            Swal.fire({
+                title: t('books.mysteryTitle', 'Surprise! You found it! 🎉'),
+                text: t('books.mysteryDesc', 'Use code MYSTERY20 for 20% off your next purchase.'),
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Awesome!'
+            }).then(() => {
+                // Remove the mystery param
+                searchParams.delete('mystery');
+                setSearchParams(searchParams, { replace: true });
+            });
+        }
+    }, [searchParams, setSearchParams, t]);
 
     const handleReviewSubmit = async (e) => {
         e.preventDefault()
@@ -140,6 +173,14 @@ const SingleBook = () => {
                         <span>{t("single.addToCart")}</span>
                     </button>
                 </div>
+            </div>
+
+            {/* Book Description */}
+            <div className="mt-12 border-t pt-8">
+                <h2 className="text-2xl font-bold mb-4">{t("single.description")}</h2>
+                <p className="text-gray-700 leading-relaxed">
+                    {book?.description || t("single.noDescription")}
+                </p>
             </div>
 
             {/* Customer Reviews */}

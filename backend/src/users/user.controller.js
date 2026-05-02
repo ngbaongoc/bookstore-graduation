@@ -45,6 +45,7 @@ const createOrUpdateProfile = async (req, res) => {
             // Update existing
             user.username = username || user.username;
             user.phone = phone || user.phone;
+            if (req.body.readingGoal !== undefined) user.readingGoal = req.body.readingGoal;
             // userId stays unchanged as per requirement if it already exists
             await user.save();
         } else {
@@ -54,6 +55,7 @@ const createOrUpdateProfile = async (req, res) => {
                 userId, 
                 email, 
                 phone, 
+                readingGoal: req.body.readingGoal || 10,
                 password: 'firebase_authenticated' // placeholder, won't be used for login
             });
             await user.save();
@@ -82,6 +84,7 @@ const updateUserProfile = async (req, res) => {
         user.username = username || user.username;
         user.phone = phone || user.phone;
         if (newEmail) user.email = newEmail;
+        if (req.body.readingGoal !== undefined) user.readingGoal = req.body.readingGoal;
 
         await user.save();
 
