@@ -1,4 +1,4 @@
-# RFM Analysis Documentation
+y# RFM Analysis Documentation
 
 This document explains how the **Recency, Frequency, Monetary (RFM)** model is implemented in `rfm_analysis.js` to segment customers based on their purchasing behavior. 
 
