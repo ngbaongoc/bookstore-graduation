@@ -41,7 +41,25 @@ const userSchema = new mongoose.Schema({
     readingGoal: {
         type: Number,
         default: 10
-    }
+    },
+    odysseyTheme: {
+        type: String,
+        default: 'default'
+    },
+    odysseyProgresses: {
+        type: Map,
+        of: {
+            currentBookIndex: { type: Number, default: 0 },
+            startedAt: { type: Date, default: null },
+            completedBooks: [{
+                bookIndex: Number,
+                reflection: String,
+                status: { type: String, enum: ['Completed', 'Pending'], default: 'Completed' },
+                completedAt: Date
+            }]
+        },
+        default: {}
+    },
 }, {
     timestamps: true
 })

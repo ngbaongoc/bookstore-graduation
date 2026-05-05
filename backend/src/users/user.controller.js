@@ -28,7 +28,11 @@ const getUserProfile = async (req, res) => {
         if (!user) {
             return res.status(404).send({ message: "User not found" });
         }
-        res.status(200).send(user);
+        const userObj = user.toObject();
+        if (userObj.odysseyProgresses instanceof Map) {
+            userObj.odysseyProgresses = Object.fromEntries(userObj.odysseyProgresses);
+        }
+        res.status(200).send(userObj);
     } catch (error) {
         console.error("Failed to fetch user profile", error);
         res.status(500).send({ message: "Failed to fetch user profile" });
@@ -46,6 +50,7 @@ const createOrUpdateProfile = async (req, res) => {
             user.username = username || user.username;
             user.phone = phone || user.phone;
             if (req.body.readingGoal !== undefined) user.readingGoal = req.body.readingGoal;
+            if (req.body.odysseyTheme !== undefined) user.odysseyTheme = req.body.odysseyTheme;
             // userId stays unchanged as per requirement if it already exists
             await user.save();
         } else {
@@ -56,6 +61,7 @@ const createOrUpdateProfile = async (req, res) => {
                 email, 
                 phone, 
                 readingGoal: req.body.readingGoal || 10,
+                odysseyTheme: req.body.odysseyTheme || 'default',
                 password: 'firebase_authenticated' // placeholder, won't be used for login
             });
             await user.save();
@@ -85,6 +91,7 @@ const updateUserProfile = async (req, res) => {
         user.phone = phone || user.phone;
         if (newEmail) user.email = newEmail;
         if (req.body.readingGoal !== undefined) user.readingGoal = req.body.readingGoal;
+        if (req.body.odysseyTheme !== undefined) user.odysseyTheme = req.body.odysseyTheme;
 
         await user.save();
 
@@ -225,6 +232,95 @@ const sendVouchers = async (req, res) => {
     }
 }
 
+const startOdysseyBook = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).send({ message: "User not found" });
+
+        // Expect themeKey in request body for the specific odyssey package
+        const { themeKey } = req.body;
+        if (!themeKey) return res.status(400).send({ message: "themeKey is required" });
+        // Ensure the progress map exists
+        if (!user.odysseyProgresses) {
+            user.odysseyProgresses = {};
+        }
+        // Initialise progress for this theme if absent
+        if (!user.odysseyProgresses[themeKey]) {
+            user.odysseyProgresses[themeKey] = { currentBookIndex: 0, startedAt: null, completedBooks: [] };
+        }
+        // Set start time for this theme
+        user.odysseyProgresses[themeKey].startedAt = new Date();
+        // Mark modified for Mongoose
+        user.markModified('odysseyProgresses');
+        await user.save();
+        const userObj = user.toObject();
+        if (userObj.odysseyProgresses instanceof Map) {
+            userObj.odysseyProgresses = Object.fromEntries(userObj.odysseyProgresses);
+        }
+        res.status(200).send(userObj);
+    } catch (error) {
+        res.status(500).send({ message: "Failed to start book", error: error.message });
+    }
+}
+
+const completeOdysseyBook = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const { bookIndex, reflection, pageCount } = req.body;
+        
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).send({ message: "User not found" });
+        // Use active theme (odysseyTheme) as the key
+        const themeKey = user.odysseyTheme;
+        if (!themeKey) return res.status(400).send({ message: "User has no active odyssey theme" });
+        const progress = user.odysseyProgresses ? user.odysseyProgresses[themeKey] : null;
+        if (!progress || !progress.startedAt) {
+            return res.status(400).send({ message: "Chưa bắt đầu đọc cuốn này." });
+        }
+
+        const startedAt = new Date(progress.startedAt);
+        const now = new Date();
+        const diffInMinutes = (now - startedAt) / 1000 / 60; // minutes
+
+        // Demo Mode Velocity Check: Pages -> Minutes (Instead of Days)
+        let minTime = 1;
+        if (pageCount < 150) minTime = 1;
+        else if (pageCount <= 200) minTime = 2;
+        else minTime = 3;
+
+        let status = 'Completed';
+        let warning = null;
+        if (diffInMinutes < minTime) {
+            status = 'Pending';
+            warning = `Có vẻ bạn đang đọc rất nhanh (${diffInMinutes.toFixed(1)} phút). Hãy dành thêm thời gian để chiêm nghiệm nhé! (Yêu cầu tối thiểu: ${minTime} ngày - đang ở chế độ Demo Mode tính bằng phút).`;
+        }
+
+        progress.completedBooks.push({
+            bookIndex,
+            reflection,
+            status,
+            completedAt: now
+        });
+
+        if (status === 'Completed') {
+            progress.currentBookIndex += 1;
+            progress.startedAt = null; // reset for next
+        }
+
+        // Mark modified map
+        user.markModified('odysseyProgresses');
+        await user.save();
+        const userObj = user.toObject();
+        if (userObj.odysseyProgresses instanceof Map) {
+            userObj.odysseyProgresses = Object.fromEntries(userObj.odysseyProgresses);
+        }
+        res.status(200).send({ user: userObj, warning, status });
+    } catch (error) {
+        res.status(500).send({ message: "Failed to complete book", error: error.message });
+    }
+}
+
 module.exports = {
     registerUser,
     getUserProfile,
@@ -232,5 +328,7 @@ module.exports = {
     createOrUpdateProfile,
     getUsers,
     deleteUser,
-    sendVouchers
+    sendVouchers,
+    startOdysseyBook,
+    completeOdysseyBook
 }

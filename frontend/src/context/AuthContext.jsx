@@ -120,6 +120,34 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    const startOdysseyBook = async (email, themeKey) => {
+        setProfileLoading(true);
+        try {
+            const response = await axios.post(`${getBaseUrl()}/api/users/odyssey/${email}/start`, { themeKey });
+            setUserProfile(response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Error starting book", error);
+            throw error;
+        } finally {
+            setProfileLoading(false);
+        }
+    }
+
+    const completeOdysseyBook = async (email, data) => {
+        setProfileLoading(true);
+        try {
+            const response = await axios.post(`${getBaseUrl()}/api/users/odyssey/${email}/complete`, data);
+            setUserProfile(response.data.user);
+            return response.data;
+        } catch (error) {
+            console.error("Error completing book", error);
+            throw error;
+        } finally {
+            setProfileLoading(false);
+        }
+    }
+
     const value = {
         currentUser,
         userProfile,
@@ -132,7 +160,9 @@ export const AuthProvider = ({ children }) => {
         signInWithGoogle,
         logoutUser,
         updateUserProfile,
-        syncProfile
+        syncProfile,
+        startOdysseyBook,
+        completeOdysseyBook
     }
 
     return (

@@ -60,7 +60,11 @@ const AddBook = () => {
                 price: parseFloat(data.price),
                 inHouseQuantity: parseInt(data.inHouseQuantity) || 0,
                 binLocation: data.binLocation || "General Shelf",
-                isbn: data.isbn
+                isbn: data.isbn,
+                moodPlaylistUrl: data.moodPlaylistUrl || "",
+                cinemaLink: data.cinemaLink || "",
+                cinemaComparison: data.cinemaComparison || "",
+                featuredQuote: data.featuredQuote || ""
             }
             await addBook(bookData).unwrap()
             alert("Book added successfully!")
@@ -170,6 +174,52 @@ const AddBook = () => {
                                 className="block w-full border border-gray-200 rounded-xl shadow-sm p-3.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all resize-none"
                                 placeholder="Syncopsis of the book..."
                             />
+                        </div>
+
+                        {/* Aesthetic Settings Box */}
+                        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                                🎨 Aesthetic Settings (Tùy chọn nghệ thuật)
+                            </h3>
+                            
+                            <div>
+                                <label className="block text-xs font-bold text-gray-600 mb-1">Featured Quote (Trích dẫn tâm đắc)</label>
+                                <textarea
+                                    rows="2"
+                                    {...register('featuredQuote')}
+                                    className="block w-full border border-gray-200 rounded-xl shadow-sm p-2.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all text-sm italic"
+                                    placeholder="Một câu trích dẫn hay trong sách..."
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-600 mb-1">Mood Playlist (Spotify URL)</label>
+                                    <input
+                                        {...register('moodPlaylistUrl')}
+                                        className="block w-full border border-gray-200 rounded-xl shadow-sm p-2.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all text-sm"
+                                        placeholder="https://open.spotify.com/..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-600 mb-1">Cinema Trailer (YouTube URL)</label>
+                                    <input
+                                        {...register('cinemaLink')}
+                                        className="block w-full border border-gray-200 rounded-xl shadow-sm p-2.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all text-sm"
+                                        placeholder="https://www.youtube.com/..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-600 mb-1">Góc nhìn điện ảnh (Cinema Comparison)</label>
+                                <textarea
+                                    rows="2"
+                                    {...register('cinemaComparison')}
+                                    className="block w-full border border-gray-200 rounded-xl shadow-sm p-2.5 focus:ring-2 focus:ring-[#008080] focus:border-transparent transition-all text-sm"
+                                    placeholder="Đánh giá ngắn so sánh giữa truyện và phim..."
+                                />
+                            </div>
                         </div>
                     </div>
 

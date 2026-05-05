@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, getUserProfile, updateUserProfile, createOrUpdateProfile, getUsers, deleteUser, sendVouchers } = require('./user.controller');
+const { registerUser, getUserProfile, updateUserProfile, createOrUpdateProfile, getUsers, deleteUser, sendVouchers, startOdysseyBook, completeOdysseyBook } = require('./user.controller');
 
 // User profile
 router.get('/profile/:email', getUserProfile);
 router.put('/profile/:email', updateUserProfile);
 router.post('/sync-profile', createOrUpdateProfile);
+
+// Odyssey Progression
+router.post('/odyssey/:email/start', startOdysseyBook);
+router.post('/odyssey/:email/complete', completeOdysseyBook);
 
 // Admin User Management
 router.get('/', getUsers);
