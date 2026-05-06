@@ -1,38 +1,34 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    tls: { rejectUnauthorized: false },
-    family: 4,
-});
+// Initialize SendGrid with API Key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
- * Generic function to send email
+ * Generic function to send email via SendGrid
  * @param {Object} options - Email options
  * @param {string} options.to - Recipient email
  * @param {string} options.subject - Email subject
  * @param {string} options.html - Email HTML content
  */
 const sendEmail = async ({ to, subject, html }) => {
-    const mailOptions = {
-        from: `Bookstore <${process.env.EMAIL_USER}>`,
+    const msg = {
         to,
+        from: {
+            email: process.env.SENDGRID_FROM_EMAIL,
+            name: 'ViBooks'
+        },
         subject,
         html,
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${to}: ${info.messageId}`);
-        return { success: true, messageId: info.messageId };
+        const response = await sgMail.send(msg);
+        console.log(`Email sent to ${to} successfully via SendGrid.`);
+        return { success: true, statusCode: response[0].statusCode };
     } catch (error) {
-        console.error(`Error sending email to ${to}:`, error);
+        console.error(`Error sending email to ${to}:`, error.response ? error.response.body : error.message);
         return { success: false, error: error.message };
     }
 };
