@@ -1,22 +1,9 @@
 const cron = require('node-cron');
-const nodemailer = require('nodemailer');
 const Order = require('./order.model');
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    tls: { rejectUnauthorized: false },
-    family: 4,
-});
+const sendEmail = require('../utils/sendEmail');
 
 const sendAbandonedCartEmail = async (order) => {
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
+    const result = await sendEmail({
         to: order.email,
         subject: 'Khôi phục giỏ hàng của bạn',
         html: `
@@ -28,16 +15,8 @@ const sendAbandonedCartEmail = async (order) => {
                 <p>Trân trọng,<br>Đội ngũ Bookstore</p>
             </div>
         `
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Reminder email sent to ${order.email}`);
-        return true;
-    } catch (error) {
-        console.error(`Error sending email to ${order.email}:`, error);
-        return false;
-    }
+    });
+    return result.success;
 };
 
 const initAbandonedCartCron = () => {
