@@ -197,7 +197,7 @@ const sendVouchers = async (req, res) => {
                     </div>
                     <p>Mã giảm giá này có thể được áp dụng khi bạn thanh toán tại website của chúng tôi.</p>
                     <div style="text-align: center; margin-top: 40px;">
-                        <a href="http://localhost:5173" style="background-color: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Ghé thăm cửa hàng ngay</a>
+                        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" style="background-color: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Ghé thăm cửa hàng ngay</a>
                     </div>
                 </div>
                 <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e0e0e0; font-size: 12px; color: #9ca3af;">

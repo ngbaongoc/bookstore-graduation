@@ -9,7 +9,8 @@
       "Bash(node update-stock.js)",
       "Bash(node:*)",
       "Bash(xargs cat:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

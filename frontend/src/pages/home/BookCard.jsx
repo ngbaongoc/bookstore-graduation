@@ -7,8 +7,10 @@ import { addToCart } from '../../redux/features/cart/cartSlice'
 import { addToWishlist } from '../../redux/features/wishlist/wishlistSlice'
 import { FaRegHeart } from "react-icons/fa";
 import formatCurrency from '../../utils/formatCurrency'
+import { useTranslation } from 'react-i18next'
 
 const BookCard = ({ book }) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
 
     const handleAddToCart = (product) => {
@@ -59,12 +61,12 @@ const BookCard = ({ book }) => {
                         onClick={() => handleAddToCart(book)}
                         className="bg-[#FFCE1A] hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md flex items-center gap-2 transition-all text-sm">
                         <FiShoppingCart />
-                        <span>Thêm vào giỏ</span>
+                        <span>{t('single.addToCart')}</span>
                     </button>
                     <button
                         onClick={() => handleAddToWishlist(book)}
                         className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-md transition-colors"
-                        title="Yêu thích"
+                        title={t('wishlist.title')}
                     >
                         <FaRegHeart className="w-4 h-4" />
                     </button>

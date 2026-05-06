@@ -9,7 +9,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
-    }
+    },
+    tls: { rejectUnauthorized: false },
+    family: 4,
 });
 
 const sendAbandonedCartEmail = async (order) => {
@@ -22,7 +24,7 @@ const sendAbandonedCartEmail = async (order) => {
                 <h1>Chào ${order.name},</h1>
                 <p>Chúng tôi nhận thấy bạn đã để lại một số mặt hàng trong giỏ hàng.</p>
                 <p>Đừng quên hoàn tất đơn hàng của bạn với tổng số tiền là <strong>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalPrice)}</strong>.</p>
-                <a href="http://localhost:5173/checkout" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Quay lại thanh toán</a>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/checkout" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Quay lại thanh toán</a>
                 <p>Trân trọng,<br>Đội ngũ Bookstore</p>
             </div>
         `
@@ -46,7 +48,7 @@ const initAbandonedCartCron = () => {
 
         try {
             const abandonedOrders = await Order.find({
-                status: 'pending',
+                status: 'Pending',
                 reminderSent: false,
                 createdAt: { $lt: oneDayAgo }
             });

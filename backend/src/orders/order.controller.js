@@ -150,15 +150,14 @@ const updateOrderStatus = async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
         
-        const validStatuses = ['pending', 'Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery', 'Delivered'];
+        const validStatuses = ['Pending', 'Processing', 'Ready to pick up', 'Picked up', 'Delivery', 'Delivered'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ message: "Invalid status value" });
         }
 
         const updateData = { status };
-        
+
         const stageMap = {
-            'pending': 'stagePending',
             'Pending': 'stagePending',
             'Processing': 'stageProcessing',
             'Ready to pick up': 'stageReadyToPickUp',
@@ -232,18 +231,27 @@ const approveCancelOrder = async (req, res) => {
             return res.status(400).json({ message: "Cannot approve cancellation for a delivered order. Inventory has already been finalized." });
         }
 
-        // Rollback inventory
+        // Rollback inventory: move reserved back to inHouse
         const items = await OrderItem.find({ orderId: order._id }).lean();
         for (const item of items) {
-            await Inventory.findOneAndUpdate(
+            // First try to rollback from reserved
+            const result = await Inventory.findOneAndUpdate(
                 { bookId: item.bookId, reservedQuantity: { $gte: item.quantity } },
-                { 
-                    $inc: { 
+                {
+                    $inc: {
                         reservedQuantity: -item.quantity,
                         inHouseQuantity: item.quantity,
                     }
-                }
+                },
+                { new: true }
             );
+            // If reserved was already cleared (e.g. by cron), just restore inHouseQuantity
+            if (!result) {
+                await Inventory.findOneAndUpdate(
+                    { bookId: item.bookId },
+                    { $inc: { inHouseQuantity: item.quantity } }
+                );
+            }
         }
 
         order.cancelOrder = true;

@@ -8,6 +8,9 @@ import getBaseUrl from '../../utils/baseURL';
 // Each template that needs personalisation will be fetched from the backend.
 // Static templates are rendered directly on the client.
 
+const SITE_URL = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+const API_URL = import.meta.env.VITE_BACKEND_URL || '${API_URL}';
+
 const STATIC_TEMPLATES = {
 
 
@@ -16,7 +19,7 @@ const STATIC_TEMPLATES = {
         subject: "Chúng tôi nhớ bạn (và những cuốn sách cũng vậy) ☕",
         segments: ["At Risk", "Can't Lose Them", "Hibernating"],
         buildHtml: (username, genre) => `
-<div style="font-family:'Georgia',serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#eee;border-radius:16px;overflow:hidden;">
+<div style="font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#eee;border-radius:16px;overflow:hidden;">
   <div style="background:linear-gradient(135deg,#922b21,#7d6608);padding:40px 30px;text-align:center;">
     <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#f9ebea;font-family:sans-serif;">BookShare · Chúng Tôi Nhớ Bạn</p>
     <h1 style="margin:16px 0 8px;font-size:30px;color:#fff;">Đã lâu rồi... ☕</h1>
@@ -32,7 +35,7 @@ const STATIC_TEMPLATES = {
       <p style="margin:0;font-size:15px;font-weight:bold;color:#82e0aa;">GIẢM 30% — DÀNH RIÊNG CHO BẠN</p>
     </div>
     <div style="text-align:center;margin-top:28px;">
-      <a href="http://localhost:3000" style="display:inline-block;background:linear-gradient(135deg,#922b21,#7d6608);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Quay Lại &amp; Tiết Kiệm 30% →</a>
+      <a href="${SITE_URL}" style="display:inline-block;background:linear-gradient(135deg,#922b21,#7d6608);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Quay Lại &amp; Tiết Kiệm 30% →</a>
     </div>
   </div>
   <div style="background:#0f0f1a;padding:16px;text-align:center;font-size:12px;color:#4a4a6a;font-family:sans-serif;">
@@ -46,7 +49,7 @@ const STATIC_TEMPLATES = {
         subject: "Hành trình đọc sách của bạn bắt đầu từ đây! 📚",
         segments: ["New Customers", "Potential Loyalist", "Promising"],
         buildHtml: (username) => `
-<div style="font-family:'Georgia',serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#eee;border-radius:16px;overflow:hidden;">
+<div style="font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#eee;border-radius:16px;overflow:hidden;">
   <div style="background:linear-gradient(135deg,#1a5276,#6c3483);padding:40px 30px;text-align:center;">
     <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#d7bde2;font-family:sans-serif;">BookShare · Chào Mừng</p>
     <h1 style="margin:16px 0 8px;font-size:30px;color:#fff;">Câu Chuyện Của Bạn Bắt Đầu Từ Đây 📚</h1>
@@ -62,7 +65,7 @@ const STATIC_TEMPLATES = {
       <p style="margin:0;font-size:14px;color:#a9cce3;">Nhập mã khi thanh toán — không giới hạn giá trị đơn hàng</p>
     </div>
     <div style="text-align:center;margin-top:28px;">
-      <a href="http://localhost:3000" style="display:inline-block;background:linear-gradient(135deg,#1a5276,#6c3483);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;"> Dùng Ngay Voucher →</a>
+      <a href="${SITE_URL}" style="display:inline-block;background:linear-gradient(135deg,#1a5276,#6c3483);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;"> Dùng Ngay Voucher →</a>
     </div>
   </div>
   <div style="background:#0f0f1a;padding:16px;text-align:center;font-size:12px;color:#4a4a6a;font-family:sans-serif;">
@@ -77,7 +80,7 @@ const STATIC_TEMPLATES = {
         subject: "Món quà đặc biệt từ Bookstore - Giảm giá 20% cho bạn!",
         segments: ["Loyal Customers"],
         buildHtml: (username) => `
-<div style="font-family:'Georgia',serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#eee;border-radius:16px;overflow:hidden;">
+<div style="font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#1a1a2e;color:#eee;border-radius:16px;overflow:hidden;">
   <div style="background:linear-gradient(135deg,#c0392b,#7b241c);padding:40px 30px;text-align:center;">
     <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#f2d7d5;font-family:sans-serif;">BookShare · Ưu Đãi Đặc Biệt</p>
     <h1 style="margin:16px 0 8px;font-size:30px;color:#fff;">Món Quà Dành Riêng Cho Bạn 💌</h1>
@@ -92,7 +95,7 @@ const STATIC_TEMPLATES = {
       <p style="margin:0;font-size:15px;font-weight:bold;color:#82e0aa;">GIẢM 20% CHO ĐƠN HÀNG TIẾP THEO</p>
     </div>
     <div style="text-align:center;margin-top:28px;">
-      <a href="http://localhost:3000" style="display:inline-block;background:linear-gradient(135deg,#c0392b,#7b241c);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Sử Dụng Mã Ngay →</a>
+      <a href="${SITE_URL}" style="display:inline-block;background:linear-gradient(135deg,#c0392b,#7b241c);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Sử Dụng Mã Ngay →</a>
     </div>
   </div>
   <div style="background:#0f0f1a;padding:16px;text-align:center;font-size:12px;color:#4a4a6a;font-family:sans-serif;">
@@ -106,7 +109,7 @@ const STATIC_TEMPLATES = {
         subject: "Đâu là những cuốn sách phản chiếu châu Âu thời hậu chiến? 🕰️",
         segments: ["All"],
         buildHtml: (username) => `
-<div style="font-family:'Georgia',serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
+<div style="font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
   <div style="background:linear-gradient(135deg,#2c3e50,#1a252f);padding:40px 30px;text-align:center;">
     <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#bdc3c7;font-family:sans-serif;">BookShare · Lịch Sử & Văn Học</p>
     <h1 style="margin:16px 0 8px;font-size:28px;color:#fff;">Châu Âu Thời Hậu Chiến 🌍</h1>
@@ -126,19 +129,19 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Viết vào năm 1949, ngay sau Thế chiến II, tác phẩm là tấm gương chân thực phản chiếu nỗi sợ hãi tột cùng về sự trỗi dậy của chủ nghĩa toàn trị ở Đông Âu. Nó báo hiệu sự bắt đầu của Chiến tranh Lạnh, phơi bày viễn cảnh tàn nhẫn khi sự thật bị bóp méo, quyền tự do bị tước đoạt và con người trở thành công cụ chính trị.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f219e2c9d6ae16e8dd2f39" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f219e2c9d6ae16e8dd2f39" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #2c3e50;background:#f9f9f9;">
       <h3 style="margin:0 0 15px;font-size:18px;color:#2c3e50;">2. Cái Trống Thiếc (The Tin Drum) - Günter Grass</h3>
       <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:15px;">
-        <img src="http://localhost:5000/uploads/1777705372914-cai-trong-thiec_859bbcb9c2574bd7a5b89ebd56c6dac7_grande.png" style="width:110px;height:auto;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,0.1);flex-shrink:0;">
+        <img src="${API_URL}/uploads/1777705372914-cai-trong-thiec_859bbcb9c2574bd7a5b89ebd56c6dac7_grande.png" style="width:110px;height:auto;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,0.1);flex-shrink:0;">
         <div>
           <p style="margin:-6px 0 8px;font-size:14px;color:#666;line-height:1.4;text-align:justify;"><strong style="color:#333;">Kể về:</strong> Cậu bé Oskar Matzerath, người đã tự ném mình xuống cầu thang để ngừng lớn lên ở tuổi lên ba. Bằng lăng kính trẻ thơ nhưng vô cùng sắc sảo cùng chiếc trống thiếc trên tay, Oskar từ chối tham gia vào thế giới người lớn đầy dối trá.</p>
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Tác phẩm là một bản cáo trạng đanh thép và đầy tính biểu tượng đối với nước Đức. Bối cảnh diễn ra tại Danzig, nó bóc trần sự tàn ác, tư tưởng phát xít, sự hèn nhát và đồng lõa của một bộ phận người dân trước thềm Đệ tam Đế chế. Cuốn sách bắt xã hội Đức hậu chiến phải đối mặt với lương tâm thối rữa và tội lỗi lịch sử mà họ đang cố gắng lãng quên.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f219e2c9d6ae16e8dd2f3c" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f219e2c9d6ae16e8dd2f3c" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #2c3e50;background:#f9f9f9;">
@@ -150,7 +153,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Tác phẩm khắc họa sâu sắc bi kịch của thế hệ thanh niên Đức sinh ra sau chiến tranh (thế hệ thứ hai). Họ bị mắc kẹt trong sự giằng xé giữa tình yêu thương đối với thế hệ cha ông và nghĩa vụ đạo đức phải phán xét, kết án những tội ác tày trời mà thế hệ đi trước đã gây ra đối với nhân loại.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f219e2c9d6ae16e8dd2f3f" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f219e2c9d6ae16e8dd2f3f" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #2c3e50;background:#f9f9f9;">
@@ -162,7 +165,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Cuốn sách mổ xẻ sự mất mát của ký ức cá nhân và tập thể tại châu Âu. Qua kiến trúc tĩnh lặng của các nhà ga và pháo đài, nó phản chiếu sự tàn phá ngầm của Holocaust—không chỉ là việc cướp đi sinh mạng, mà còn là việc xóa sổ lịch sử, gốc gác và để lại một vết thương vĩnh viễn ám ảnh lục địa già.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f219e2c9d6ae16e8dd2f42" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f219e2c9d6ae16e8dd2f42" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #2c3e50;background:#f9f9f9;">
@@ -174,11 +177,11 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Mặc dù bối cảnh ở Anh, nhưng nó phản ánh sự thay đổi chóng mặt của xã hội châu Âu nói chung. Tác phẩm bóc trần sự ngây thơ, mù quáng về mặt chính trị của giới quý tộc cũ, đồng thời đánh dấu sự sụp đổ của một đế chế, sự tàn lụi của hệ thống giai cấp và những ảo tưởng vỡ vụn của nước Anh sau chiến tranh.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f219e3c9d6ae16e8dd2f45" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f219e3c9d6ae16e8dd2f45" style="color:#2980b9;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="text-align:center;margin-top:35px;">
-      <a href="http://localhost:3000" style="display:inline-block;background:linear-gradient(135deg,#5d4037,#3e2723);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Khám Phá Ngay →</a>
+      <a href="${SITE_URL}" style="display:inline-block;background:linear-gradient(135deg,#5d4037,#3e2723);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Khám Phá Ngay →</a>
     </div>
 
    
@@ -194,7 +197,7 @@ const STATIC_TEMPLATES = {
         subject: "Văn học Việt Nam thế kỷ 20 - Khi loạt trường phái giao thoa giữa Tây và Ta lên ngôi ✒️",
         segments: ["All"],
         buildHtml: (username) => `
-<div style="font-family:'Georgia',serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
+<div style="font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
   <div style="background:linear-gradient(135deg,#5d4037,#3e2723);padding:40px 30px;text-align:center;">
     <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#d7ccc8;font-family:sans-serif;">BookShare · Văn Học Nước Nhà</p>
     <h1 style="margin:16px 0 8px;font-size:28px;color:#fff;line-height:1.4;">Văn học Việt Nam Thế Kỉ 20 ✒️</h1>
@@ -214,7 +217,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Tiếng cười trào phúng cay độc nhắm vào một xã hội thành thị nửa vời, lố lăng, nơi đồng tiền và những giá trị Tây học bị bóp méo che mờ đi nhân tính.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f21db1739078e6230e6b5a" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f21db1739078e6230e6b5a" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #5d4037;background:#f9f9f9;">
@@ -226,7 +229,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Khát khao vươn tới cái "Đẹp" tuyệt đích và nỗi hoài niệm sâu sắc về những giá trị truyền thống cổ truyền dân tộc đang bị xô ngã bởi văn minh vật chất phương Tây.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f21db2739078e6230e6b5d" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f21db2739078e6230e6b5d" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #5d4037;background:#f9f9f9;">
@@ -238,7 +241,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Sự trỗi dậy mạnh mẽ của cái "Tôi" cá nhân (ảnh hưởng từ thơ ca lãng mạn Pháp), đập vỡ lớp vỏ bọc khuôn thước, ước lệ của cái "Ta" trong thơ cũ phương Đông.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f21db2739078e6230e6b60" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f21db2739078e6230e6b60" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #5d4037;background:#f9f9f9;">
@@ -250,23 +253,23 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Chủ nghĩa hiện thực phê phán đỉnh cao, lên án sâu sắc xã hội phong kiến nửa thuộc địa thối nát đã tước đoạt cả nhân hình lẫn nhân tính của con người.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f21db2739078e6230e6b63" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f21db2739078e6230e6b63" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #5d4037;background:#f9f9f9;">
       <h3 style="margin:0 0 15px;font-size:18px;color:#5d4037;">5. Gió Đầu Mùa - Thạch Lam</h3>
       <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:15px;">
-        <img src="http://localhost:5000/uploads/1777705052684-giodaumua.jpg.webp" style="width:110px;height:auto;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,0.1);flex-shrink:0;">
+        <img src="${API_URL}/uploads/1777705052684-giodaumua.jpg.webp" style="width:110px;height:auto;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,0.1);flex-shrink:0;">
         <div>
           <p style="margin:-6px 0 8px;font-size:14px;color:#666;line-height:1.4;text-align:justify;"><strong style="color:#333;">Kể về:</strong> Những mảnh đời bình dị, những kiếp người nghèo khổ nhỏ bé nhưng luôn ánh lên tình người ấm áp và những rung động tinh tế.</p>
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;"><strong>Phản chiếu:</strong> Một luồng gió lãng mạn nhẹ nhàng, sâu lắng, mang đậm chất thơ, hòa quyện giữa kỹ thuật phân tích tâm lý phương Tây và tâm hồn nhạy cảm phương Đông.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f21db2739078e6230e6b66" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f21db2739078e6230e6b66" style="color:#8d6e63;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="text-align:center;margin-top:35px;">
-      <a href="http://localhost:3000" style="display:inline-block;background:linear-gradient(135deg,#5d4037,#3e2723);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Khám Phá Ngay →</a>
+      <a href="${SITE_URL}" style="display:inline-block;background:linear-gradient(135deg,#5d4037,#3e2723);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Khám Phá Ngay →</a>
     </div>
   </div>
   <div style="background:#f4f4f4;padding:16px;text-align:center;font-size:12px;color:#888;font-family:sans-serif;">
@@ -280,7 +283,7 @@ const STATIC_TEMPLATES = {
         subject: "Đọc gì để tìm hiểu thủ pháp viết của Nguyễn Huy Thiệp - Bậc thầy nghệ thuật truyện ngắn? 🖋️",
         segments: ["All"],
         buildHtml: (username) => `
-<div style="font-family:'Georgia',serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
+<div style="font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
   <div style="background:linear-gradient(135deg,#37474f,#263238);padding:40px 30px;text-align:center;">
     <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#cfd8dc;font-family:sans-serif;">BookShare · Tác Giả & Tác Phẩm</p>
     <h1 style="margin:16px 0 8px;font-size:28px;color:#fff;line-height:1.4;">Bậc Thầy Truyện Ngắn<br>Nguyễn Huy Thiệp 🖋️</h1>
@@ -300,7 +303,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;">Câu chuyện về sự bơ vơ của một vị tướng giữa thời bình. Nguyễn Huy Thiệp đã triệt tiêu sự lãng mạn, dùng ngôn từ sắc như dao mổ để bóc trần những giá trị đạo đức đang băng hoại trước đồng tiền.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f221fba82f17bd1a2559b0" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f221fba82f17bd1a2559b0" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #37474f;background:#f9f9f9;">
@@ -312,7 +315,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;">10 câu chuyện đan xen giữa thực và ảo. Ông sử dụng màu sắc huyền thoại để mổ xẻ phần "con" và phần "người" trong bản tính nhân loại trước thiên nhiên hoang dã miền sơn cước.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f221fba82f17bd1a2559b3" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f221fba82f17bd1a2559b3" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #37474f;background:#f9f9f9;">
@@ -324,7 +327,7 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;">Dòng sông trở thành nhân vật chứng nhân vô ngôn. Sự tàn nhẫn được bọc trong một giọng văn có chất thơ u hoài, một sự kết hợp nghịch lý tạo ra sức ám ảnh sâu sắc về kiếp nhân sinh.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f221fba82f17bd1a2559b6" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f221fba82f17bd1a2559b6" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #37474f;background:#f9f9f9;">
@@ -336,23 +339,23 @@ const STATIC_TEMPLATES = {
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;">Phá bỏ hoàn toàn lối kể chuyện tụng ca truyền thống. Tác giả hạ bệ các hình tượng lịch sử xuống mức phàm tục, đa chiều, buộc người đọc phải hoài nghi và thoát khỏi hệ quy chiếu cũ.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f221fba82f17bd1a2559b9" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f221fba82f17bd1a2559b9" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="margin:25px 0;padding:20px;border-left:4px solid #37474f;background:#f9f9f9;">
       <h3 style="margin:0 0 15px;font-size:18px;color:#37474f;">5. Tuổi 20 Yêu Dấu</h3>
       <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:15px;">
-        <img src="http://localhost:5000/uploads/1777705236814-tuoi-20-yeu-dau-_92375_1.jpg" style="width:110px;height:auto;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,0.1);flex-shrink:0;">
+        <img src="${API_URL}/uploads/1777705236814-tuoi-20-yeu-dau-_92375_1.jpg" style="width:110px;height:auto;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,0.1);flex-shrink:0;">
         <div>
           <p style="margin:-6px 0 8px;font-size:14px;color:#666;line-height:1.4;text-align:justify;"><strong style="color:#333;">Thủ pháp tiêu biểu:</strong> Sử dụng khẩu ngữ đường phố và xây dựng hình tượng "phản anh hùng".</p>
           <p style="margin:0;font-size:14px;color:#666;line-height:1.6;text-align:justify;">Quyển tiểu thuyết xoáy sâu vào hố đen của tuổi trẻ tha hóa đô thị. Ngôn từ lấm láp, trực diện đến mức thô ráp, lột trần những cơn khủng hoảng hiện sinh của xã hội hiện đại.</p>
         </div>
       </div>
-      <div style="margin-top:12px;"><a href="http://localhost:3000/books/69f221fba82f17bd1a2559bc" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
+      <div style="margin-top:12px;"><a href="${SITE_URL}/books/69f221fba82f17bd1a2559bc" style="color:#546e7a;text-decoration:none;font-weight:bold;font-size:14px;">Xem và đặt mua tác phẩm &rarr;</a></div>
     </div>
 
     <div style="text-align:center;margin-top:35px;">
-      <a href="http://localhost:3000" style="display:inline-block;background:linear-gradient(135deg,#37474f,#263238);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Khám Phá Ngay →</a>
+      <a href="${SITE_URL}" style="display:inline-block;background:linear-gradient(135deg,#37474f,#263238);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;">Khám Phá Ngay →</a>
     </div>
   </div>
   <div style="background:#f4f4f4;padding:16px;text-align:center;font-size:12px;color:#888;font-family:sans-serif;">
@@ -366,7 +369,7 @@ const STATIC_TEMPLATES = {
         subject: "Bác sĩ Zhivago - Cuốn sách từng là vũ khí để CIA tấn công Liên Xô 🕵️‍♂️",
         segments: ["All"],
         buildHtml: (username) => `
-<div style="font-family:'Georgia',serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
+<div style="font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#fdfbf7;color:#333;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;">
   <div style="background:linear-gradient(135deg,#8e44ad,#2c3e50);padding:40px 30px;text-align:center;">
     <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#d2b4de;font-family:sans-serif;">BookShare · Hồ Sơ Tuyệt Mật</p>
     <h1 style="margin:16px 0 8px;font-size:28px;color:#fff;line-height:1.4;">Bác Sĩ Zhivago 🕵️‍♂️</h1>
@@ -401,7 +404,7 @@ const STATIC_TEMPLATES = {
     <div style="margin:30px 0 20px;padding:20px;background:#f4ecf7;border-radius:8px;text-align:center;">
       <h3 style="margin:0 0 15px;font-size:18px;color:#5b2c6f;">Trải Nghiệm Kiệt Tác Bác Sĩ Zhivago</h3>
       <p style="margin:0 0 20px;font-size:14px;color:#666;line-height:1.6;">Hãy tự mình đọc và cảm nhận sức mạnh của một tác phẩm nghệ thuật từng khiến cả một cường quốc phải e sợ.</p>
-      <a href="http://localhost:3000/books/69f22543bc16acd554b83149" style="display:inline-block;background:linear-gradient(135deg,#8e44ad,#5b2c6f);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;box-shadow:0 4px 6px rgba(0,0,0,0.1);">Xem và đặt mua tác phẩm &rarr;</a>
+      <a href="${SITE_URL}/books/69f22543bc16acd554b83149" style="display:inline-block;background:linear-gradient(135deg,#8e44ad,#5b2c6f);color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:bold;font-family:sans-serif;box-shadow:0 4px 6px rgba(0,0,0,0.1);">Xem và đặt mua tác phẩm &rarr;</a>
     </div>
 
   </div>

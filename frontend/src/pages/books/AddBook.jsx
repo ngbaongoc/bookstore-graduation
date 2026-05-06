@@ -4,20 +4,22 @@ import { useAddBookMutation } from '../../redux/features/books/booksApi'
 import { useNavigate } from 'react-router-dom'
 import { MdArrowBack, MdCloudUpload, MdCheckCircle } from 'react-icons/md'
 import getBaseUrl from '../../utils/baseURL'
+import { useTranslation } from 'react-i18next'
 
 export const MOOD_OPTIONS = [
-    { id: 'bitter_reality', label: 'Trầm tư trước thời đại', emoji: '🔪' },
-    { id: 'existential_crisis', label: 'Khủng hoảng hiện sinh', emoji: '🌪️' },
-    { id: 'hanoi_polite', label: 'Lịch thiệp kiểu Hà Nội xưa', emoji: '🍵' },
-    { id: 'french_sadness', label: 'Buồn lơ lửng', emoji: '🍷' },
-    { id: 'urban_loneliness', label: 'Người cô đơn trong thành thị', emoji: '🏙️' },
-    { id: 'window_staring', label: 'Thế giới đi ngủ và bạn ngồi bên cửa sổ lúc một giờ sáng', emoji: '🌃' },
-    { id: 'german_cold', label: 'Khô lạnh như người Đức', emoji: '❄️' },
-    { id: 'noir_detective', label: 'Trinh thám kiểu phim noir', emoji: '🕵️' },
-    { id: 'not_on_earth', label: 'Đi tìm điều chưa có trên Trái Đất', emoji: '🚀' }
+    { id: 'bitter_reality', labelKey: 'moods.bitter_reality', emoji: '🔪' },
+    { id: 'existential_crisis', labelKey: 'moods.existential_crisis', emoji: '🌪️' },
+    { id: 'hanoi_polite', labelKey: 'moods.hanoi_polite', emoji: '🍵' },
+    { id: 'french_sadness', labelKey: 'moods.french_sadness', emoji: '🍷' },
+    { id: 'urban_loneliness', labelKey: 'moods.urban_loneliness', emoji: '🏙️' },
+    { id: 'window_staring', labelKey: 'moods.window_staring', emoji: '🌃' },
+    { id: 'german_cold', labelKey: 'moods.german_cold', emoji: '❄️' },
+    { id: 'noir_detective', labelKey: 'moods.noir_detective', emoji: '🕵️' },
+    { id: 'not_on_earth', labelKey: 'moods.not_on_earth', emoji: '🚀' }
 ]
 
 const AddBook = () => {
+    const { t } = useTranslation()
     const { register, handleSubmit, reset, formState: { errors } } = useForm()
     const [addBook, { isLoading }] = useAddBookMutation()
     const navigate = useNavigate()
@@ -156,7 +158,7 @@ const AddBook = () => {
                                 {MOOD_OPTIONS.map(mood => (
                                     <label key={mood.id} className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
                                         <input type="checkbox" value={mood.id} {...register('moods')} className="rounded text-[#008080] focus:ring-[#008080] w-4 h-4" />
-                                        <span className="text-sm text-gray-700">{mood.emoji} {mood.label}</span>
+                                        <span className="text-sm text-gray-700">{mood.emoji} {t(mood.labelKey)}</span>
                                     </label>
                                 ))}
                             </div>

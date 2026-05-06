@@ -180,14 +180,14 @@ const renderWrappedEmail = (stats) => {
 
     <!-- ── THE OPENER ── -->
     <tr><td style="background:#1a1a2e;padding:40px;text-align:center;border-bottom:1px solid #242442;">
-      <div style="width:80px;height:80px;background:#16213e;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;border:2px solid #5dade2;">
+      <div style="width:80px;height:80px;background:#16213e;border-radius:50%;margin:0 auto 20px;align-items:center;justify-content:center;border:2px solid #5dade2;">
         <span style="font-size:40px;">🌱</span>
       </div>
       <div style="display:inline-block;text-align:left;max-width:400px;margin:0 auto;">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
             <td width="120" valign="top" style="padding-right:20px;">
-              ${firstBook?.thumbnail ? `<img src="${firstBook.thumbnail.startsWith('http') ? firstBook.thumbnail : `http://localhost:5000${firstBook.thumbnail}`}" alt="${firstBook.title}" style="width:120px;height:auto;border-radius:8px;box-shadow:0 8px 16px rgba(0,0,0,0.5);">` : ''}
+              ${firstBook?.thumbnail ? `<img src="${firstBook.thumbnail.startsWith('http') ? firstBook.thumbnail : `${process.env.BACKEND_URL || 'http://localhost:5000'}${firstBook.thumbnail}`}" alt="${firstBook.title}" style="width:120px;height:180px;object-fit:cover;border-radius:8px;box-shadow:0 8px 16px rgba(0,0,0,0.5);">` : ''}
             </td>
             <td valign="top">
               <h2 style="margin:0;font-size:24px;color:#fff;line-height:1.2;">${firstBook?.title || 'Cuốn sách bí ẩn'}</h2>
@@ -280,7 +280,7 @@ const renderWrappedEmail = (stats) => {
     <!-- ── CTA ── -->
     <tr><td style="padding:60px 40px;text-align:center;">
       <p style="margin:0 0 25px;color:#fff;font-size:20px;font-weight:bold;">Sẵn sàng cho những kỷ lục mới trong năm ${year + 1}?</p>
-      <a href="http://localhost:5173/books?category=${encodeURIComponent(favoriteCategory)}&excludePurchased=true"
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/books?category=${encodeURIComponent(favoriteCategory)}&excludePurchased=true"
          style="display:inline-block;background:linear-gradient(135deg,#f1c40f,#e67e22);color:#1a1a2e;
                 text-decoration:none;padding:18px 45px;border-radius:100px;font-size:18px;
                 font-weight:900;text-transform:uppercase;letter-spacing:1px;box-shadow:0 10px 30px rgba(241,196,15,0.3);">

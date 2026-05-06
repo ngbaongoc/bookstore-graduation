@@ -5,9 +5,11 @@ import { useFetchBookByIdQuery, useUpdateBookMutation } from '../../redux/featur
 import { useForm } from "react-hook-form"
 import { MdArrowBack, MdCloudUpload } from 'react-icons/md'
 import getBaseUrl from '../../utils/baseURL'
+import { useTranslation } from 'react-i18next'
 import { MOOD_OPTIONS } from './AddBook'
 
 const UpdateBook = () => {
+    const { t } = useTranslation()
     const { id } = useParams()
     const navigate = useNavigate()
     const { data: book, isLoading, isError } = useFetchBookByIdQuery(id)
@@ -165,7 +167,7 @@ const UpdateBook = () => {
                                 {MOOD_OPTIONS.map(mood => (
                                     <label key={mood.id} className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
                                         <input type="checkbox" value={mood.id} {...register('moods')} className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4" />
-                                        <span className="text-sm text-gray-700">{mood.emoji} {mood.label}</span>
+                                        <span className="text-sm text-gray-700">{mood.emoji} {t(mood.labelKey)}</span>
                                     </label>
                                 ))}
                             </div>

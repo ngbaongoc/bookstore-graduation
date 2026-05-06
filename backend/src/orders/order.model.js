@@ -44,7 +44,7 @@ const orderSchema = new mongoose.Schema({
     cancelRequested: { type: Boolean, default: false },
     cancelReason: { type: String, default: null },
     cancelRequestedAt: { type: Date, default: null },
-    cancelStatus: { type: String, enum: ['pending', 'approved', 'disapproved'], default: 'pending' },
+    cancelStatus: { type: String, enum: ['pending', 'approved', 'disapproved', 'system_cancelled'], default: 'pending' },
 
     userId: {
         type: String,

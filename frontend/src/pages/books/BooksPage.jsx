@@ -183,7 +183,7 @@ const BooksPage = () => {
                 <div className="mx-auto max-w-6xl px-4 mb-4">
                     <div className="flex items-center gap-3 bg-purple-50 border border-purple-200 text-purple-800 rounded-xl px-5 py-3 text-sm font-medium">
                         <span className="text-lg">🎁</span>
-                        <span>Showing <strong>{selectedCategory}</strong> books you haven't read yet — just for you.</span>
+                        <span dangerouslySetInnerHTML={{ __html: t('books.excludeBanner', { category: selectedCategory }) }} />
                     </div>
                 </div>
             )}
@@ -191,7 +191,7 @@ const BooksPage = () => {
             <div className="max-w-6xl mx-auto px-4 pb-16">
                 {/* Mood Bar */}
                 <div className="mb-10 text-center">
-                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Hôm nay bạn thấy thế nào?</p>
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">{t('books.moodQuestion')}</p>
                     <div className="flex flex-wrap justify-center gap-4">
                         {MOODS.map((mood) => (
                             <button
@@ -210,7 +210,7 @@ const BooksPage = () => {
                                     {mood.emoji}
                                 </span>
                                 <span className={`text-xs font-bold ${selectedMood === mood.id ? 'text-white' : 'text-gray-500'}`}>
-                                    {mood.label}
+                                    {t(mood.labelKey)}
                                 </span>
                             </button>
                         ))}

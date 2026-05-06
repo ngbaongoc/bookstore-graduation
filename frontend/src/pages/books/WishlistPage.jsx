@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom'
 import { getImgUrl } from '../../utils/getImgUrl';
 import { removeFromWishlist, clearWishlist } from '../../redux/features/wishlist/wishlistSlice';
 import { addToCart } from '../../redux/features/cart/cartSlice';
+import { useTranslation } from 'react-i18next'
 
 const WishlistPage = () => {
+    const { t } = useTranslation()
     const wishlistItems = useSelector(state => state.wishlist.wishlistItems);
     const dispatch = useDispatch();
 
@@ -26,14 +28,14 @@ const WishlistPage = () => {
         <div className="flex mt-12 h-full flex-col overflow-hidden bg-white shadow-xl">
             <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                 <div className="flex items-start justify-between">
-                    <h2 className="text-lg font-medium text-gray-900">My Wishlist</h2>
+                    <h2 className="text-lg font-medium text-gray-900">{t('wishlist.title')}</h2>
                     <div className="ml-3 flex h-7 items-center ">
                         <button
                             type="button"
                             onClick={handleClearWishlist}
                             className="relative -m-2 py-1 px-2 bg-red-500 text-white rounded-md hover:bg-secondary transition-all duration-200"
                         >
-                            <span>Clear Wishlist</span>
+                            <span>{t('wishlist.clear')}</span>
                         </button>
                     </div>
                 </div>
@@ -68,19 +70,19 @@ const WishlistPage = () => {
                                                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product?.newPrice || product?.price)}
                                                             </p>
                                                         </div>
-                                                        <p className="mt-1 text-sm text-gray-500 capitalize"><strong>Category: </strong>{product?.category}</p>
+                                                        <p className="mt-1 text-sm text-gray-500 capitalize"><strong>{t('wishlist.category')}: </strong>{product?.category}</p>
                                                     </div>
                                                     <div className="flex flex-1 flex-wrap items-end justify-between text-sm">
                                                         <div className="flex gap-4">
                                                             <button
                                                                 onClick={() => handleAddToCart(product)}
                                                                 className="font-medium text-indigo-600 hover:text-indigo-500">
-                                                                Move to Cart
+                                                                {t('wishlist.moveToCart')}
                                                             </button>
                                                             <button
                                                                 onClick={() => handleRemoveFromWishlist(product)}
                                                                 className="font-medium text-red-600 hover:text-red-500">
-                                                                Remove
+                                                                {t('wishlist.remove')}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -89,7 +91,7 @@ const WishlistPage = () => {
                                         ))
                                     }
                                 </ul>
-                            ) : (<p className="text-center py-10">Your wishlist is empty!</p>)
+                            ) : (<p className="text-center py-10">{t('wishlist.empty')}</p>)
                         }
                     </div>
                 </div>
@@ -101,7 +103,7 @@ const WishlistPage = () => {
                         type="button"
                         className="font-medium text-indigo-600 hover:text-indigo-500 ml-1"
                     >
-                        Continue Shopping
+                        {t('wishlist.continueShopping')}
                         <span aria-hidden="true"> &rarr;</span>
                     </button>
                 </Link>
