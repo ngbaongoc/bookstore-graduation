@@ -124,7 +124,9 @@
     "clearFilters": "Xóa tất cả bộ lọc",
     "loadingError": "Không tải được sách. Vui lòng thử lại sau.",
     "excludeBanner": "Hiển thị sách <strong>{{category}}</strong> mà bạn chưa đọc — dành riêng cho bạn.",
-    "moodQuestion": "Hôm nay bạn thấy thế nào?"
+    "moodQuestion": "Hôm nay bạn thấy thế nào?",
+    "outOfStock": "Hết hàng",
+    "onlyLeft": "Chỉ còn {{count}} cuốn"
   },
   "single": {
     "author": "Tác giả",

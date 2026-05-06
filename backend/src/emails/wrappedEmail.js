@@ -1,49 +1,66 @@
 const Order = require('../orders/order.model');
 const OrderItem = require('../orders/orderItem.model');
 
-// ─── Badge Definitions (Merged with Alter Ego) ────────────────────────────────
+// ─── Badge Definitions (ISEKAI / Xuyên Không Theme) ───────────────────────────
 const BADGES = {
-    CLASSICIST:   { name: "Nhà tri thức thế kỷ 19",  icon: "🏛️", description: "Người quan sát và trầm ngâm trước những cơn lốc biến đổi của thời đại." },
-    GENRE_HOPPER: { name: "Kẻ du hành tri thức",    icon: "🌈", description: "Bạn là cánh chim hải âu bay giữa đại dương tri thức, không ngại ngần đặt chân lên bất kỳ vùng đất lạ nào để kiếm tìm sự khai sáng." },
-    DETECTIVE:    { name: "Thám tử ẩn danh",          icon: "🔍", description: "Người nắm giữ những bí mật đen tối nhất và luôn đi trước hung thủ một bước." },
-    WORLD_BUILDER:{ name: "Pháp sư lãng du",         icon: "🪄", description: "Kẻ mang quyền năng thay đổi thực tại, bị lạc vào thế giới hiện đại đầy náo nhiệt." },
-    BINGE_READER: { name: "Mọt sách chính hiệu",     icon: "📚", description: "Độc giả bền bỉ nhất, người dệt nên những giấc mơ từ hàng vạn con chữ." },
-    ROMANTIC:     { name: "Thi sĩ mộng mơ",          icon: "🌹", description: "Đi tìm bản tình ca còn dang dở giữa nhịp sống hối hả." },
-    SCHOLAR:      { name: "Lãnh đạo tiên phong",     icon: "🎓", description: "Một nhà cách tân luôn nhìn thấy cơ hội trong khi mọi người chỉ thấy khó khăn." },
-    AVID_READER:  { name: "Độc giả chân thành",      icon: "⭐", description: "Người lữ hành lặng lẽ nhưng kiên trì trên con đường chinh phục tri thức." },
+    INTELLECTUAL_20TH: { name: "Trí thức tiểu tư sản đầu TK 20", icon: "🖋️", description: "Bạn mang tâm thế của những trí thức đầy trăn trở như trong văn Nam Cao, dùng ngòi bút và tri thức để soi rọi những góc khuất của nhân thế." },
+    RENAISSANCE_NOBLE: { name: "Quý tộc thời kỳ Phục hưng", icon: "🏛️", description: "Giữa những tòa lâu đài đá và những bữa tiệc xa hoa, bạn là người nắm giữ tinh hoa nghệ thuật và tư tưởng tự do của nhân loại." },
+    BAKER_STREET_DETECTIVE: { name: "Thám tử tư phố Baker", icon: "🔍", description: "Sương mù London không làm khó được bạn. Với óc quan sát nhạy bén, bạn chính là nỗi khiếp sợ của những kẻ thủ ác trong bóng tối." },
+    GALACTIC_TRAVELER: { name: "Kẻ lữ hành thiên hà", icon: "🚀", description: "Bạn đã vượt qua giới hạn của thực tại để đặt chân lên những vì sao xa xôi, nơi công nghệ và tri thức không có biên giới." },
+    ANCIENT_SCRIBE: { name: "Sử gia cung đình", icon: "📜", description: "Bạn là người ghi chép lại những thăng trầm của các đế chế, nắm giữ chìa khóa mở ra kho tàng tri thức của hàng ngàn năm trước." },
+    MYSTIC_WIZARD: { name: "Pháp sư huyền thoại", icon: "🪄", description: "Thế giới này quá nhỏ bé với bạn. Bạn thuộc về những vùng đất của phép thuật, nơi rồng và những lời nguyền thống trị." },
+    MODERN_ENTREPRENEUR: { name: "Nhà công nghiệp thực dụng", icon: "📈", description: "Bạn là người định hình nên thời đại mới, luôn đi trước một bước trong việc biến những ý tưởng táo bạo thành hiện thực." },
+    WANDERING_POET: { name: "Thi sĩ giang hồ", icon: "🌸", description: "Bạn đi tìm vẻ đẹp trong từng nhành hoa kẽ lá, viết nên những bản tình ca lãng mạn nhất giữa thế giới đầy biến động." },
+    MULTIVERSE_EXPLORER: { name: "Kẻ du hành đa vũ trụ", icon: "🌈", description: "Không dòng thời gian nào có thể giữ chân bạn. Bạn là kẻ lữ hành tự do giữa các thế giới, thu thập tinh hoa từ mọi nền văn minh." },
+    CHRONICLE_KEEPER: { name: "Người giữ đền tri thức", icon: "📚", description: "Bạn không chỉ đọc, bạn đang xây dựng một thư viện vĩnh cửu trong tâm trí, nơi lưu trữ mọi giấc mơ của nhân loại." },
 };
 
-const CLASSIC_GENRES   = ['Classic Literature', 'Literary Fiction', 'Modern Classics'];
-const MYSTERY_GENRES   = ['Mystery, Thriller & Suspense', 'Detective and mystery stories', 'Detective and mystery stories, English', 'Historical Mystery'];
-const FANTASY_GENRES   = ['Fantasy', 'Science Fiction', 'Science Fiction Humor', 'Dystopian Fiction', 'Post-Apocalyptic', 'Adventure'];
-const NONFICTION_GENRES= ['Biography', 'Literature & Fiction'];
+const VN_CLASSIC_AUTHORS = ['Nam Cao', 'Vũ Trọng Phụng', 'Thạch Lam', 'Nguyễn Tuân', 'Ngô Tất Tố', 'Xuân Diệu', 'Huy Cận', 'Nguyễn Huy Thiệp'];
+const CLASSIC_GENRES = ['Classic Literature', 'Literary Fiction', 'Modern Classics'];
+const MYSTERY_GENRES = ['Mystery, Thriller & Suspense', 'Detective and mystery stories', 'Detective and mystery stories, English', 'Historical Mystery'];
+const FANTASY_GENRES = ['Fantasy', 'Science Fiction', 'Science Fiction Humor', 'Dystopian Fiction', 'Post-Apocalyptic', 'Adventure'];
+const SCI_FI_GENRES = ['Science Fiction', 'Post-Apocalyptic', 'Dystopian Fiction'];
+const BUSINESS_GENRES = ['Business', 'Economics', 'Self-Help', 'Kỹ năng'];
 
 /**
  * Classify a customer into a reading personality badge
- * based on their category purchase distribution.
+ * based on their author and category purchase distribution.
  */
-const assignReadingPersonality = (catTally, genreCount, totalBooks) => {
-    if (totalBooks === 0) return BADGES.AVID_READER;
+const assignReadingPersonality = (catTally, authorTally, genreCount, totalBooks) => {
+    if (totalBooks === 0) return BADGES.ANCIENT_SCRIBE;
 
     const totalItems = Object.values(catTally).reduce((a, b) => a + b, 0);
-    const sorted = Object.entries(catTally).sort((a, b) => b[1] - a[1]);
-    const [topCategory, topCount] = sorted[0] || ['', 0];
+    const sortedCats = Object.entries(catTally).sort((a, b) => b[1] - a[1]);
+    const [topCategory, topCount] = sortedCats[0] || ['', 0];
     const topShare = topCount / totalItems;
 
-    // Prioritize specific interests even if they read many genres
-    if (topShare >= 0.35 && CLASSIC_GENRES.includes(topCategory))   return BADGES.CLASSICIST;
-    if (topShare >= 0.35 && MYSTERY_GENRES.includes(topCategory))   return BADGES.DETECTIVE;
-    if (topShare >= 0.35 && FANTASY_GENRES.includes(topCategory))   return BADGES.WORLD_BUILDER;
-    if (topShare >= 0.35 && topCategory === 'Contemporary Fiction')  return BADGES.ROMANTIC;
-    if (topShare >= 0.35 && NONFICTION_GENRES.includes(topCategory)) return BADGES.SCHOLAR;
-    
-    // Then check for volume
-    if (totalBooks >= 15) return BADGES.BINGE_READER;
-    
-    // Then check for diversity
-    if (genreCount >= 5) return BADGES.GENRE_HOPPER;
-    
-    return BADGES.AVID_READER;
+    // 1. Special Recognition: Vietnamese Classics (Author-based)
+    let vnAuthorCount = 0;
+    for (const author in authorTally) {
+        if (VN_CLASSIC_AUTHORS.includes(author)) {
+            vnAuthorCount += authorTally[author];
+        }
+    }
+    if (vnAuthorCount / totalBooks >= 0.3) return BADGES.INTELLECTUAL_20TH;
+
+    // 2. Niche Specializations (>35% of total reading)
+    if (topShare >= 0.35) {
+        if (MYSTERY_GENRES.includes(topCategory)) return BADGES.BAKER_STREET_DETECTIVE;
+        if (SCI_FI_GENRES.includes(topCategory)) return BADGES.GALACTIC_TRAVELER;
+        if (FANTASY_GENRES.includes(topCategory)) return BADGES.MYSTIC_WIZARD;
+        if (CLASSIC_GENRES.includes(topCategory)) return BADGES.RENAISSANCE_NOBLE;
+        if (BUSINESS_GENRES.includes(topCategory)) return BADGES.MODERN_ENTREPRENEUR;
+        if (topCategory === 'Contemporary Fiction' || topCategory === 'Poetry') return BADGES.WANDERING_POET;
+    }
+
+    // 3. High Volume
+    if (totalBooks >= 20) return BADGES.CHRONICLE_KEEPER;
+
+    // 4. High Diversity
+    if (genreCount >= 5) return BADGES.MULTIVERSE_EXPLORER;
+
+    // Default Fallback
+    return BADGES.ANCIENT_SCRIBE;
 };
 
 /**
@@ -133,7 +150,7 @@ const buildWrappedStats = async (userId, year) => {
     const firstOrderId = orders[0]._id.toString();
     const firstBook = allBooks.find(b => b.orderId.toString() === firstOrderId) || allBooks[0];
 
-    const badge = assignReadingPersonality(catTally, genreCount, totalBooks);
+    const badge = assignReadingPersonality(catTally, authorTally, genreCount, totalBooks);
 
     return {
         year,
@@ -271,7 +288,7 @@ const renderWrappedEmail = (stats) => {
 
     <!-- ── BADGE SECTION ── -->
     <tr><td style="background:linear-gradient(135deg,#1b263b 0%,#0d1b2a 100%);padding:60px 40px;text-align:center;border-top:2px solid #2c3e50;border-bottom:2px solid #2c3e50;">
-      <p style="margin:0 0 20px;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#f1c40f;font-weight:bold;">DANH HIỆU ĐỘC GIẢ ${year}</p>
+      <p style="margin:0 0 20px;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#f1c40f;font-weight:bold;">Bạn là ai nếu xuyên không ngược thời gian?</p>
       <div style="font-size:80px;line-height:1;margin-bottom:20px;">${badge.icon}</div>
       <h2 style="margin:0;font-size:36px;color:#fff;font-weight:900;">${badge.name}</h2>
       <p style="margin:15px auto 0;font-size:17px;color:#a9cce3;line-height:1.6;max-width:400px;font-style:italic;">"${badge.description}"</p>
@@ -284,7 +301,7 @@ const renderWrappedEmail = (stats) => {
          style="display:inline-block;background:linear-gradient(135deg,#f1c40f,#e67e22);color:#1a1a2e;
                 text-decoration:none;padding:18px 45px;border-radius:100px;font-size:18px;
                 font-weight:900;text-transform:uppercase;letter-spacing:1px;box-shadow:0 10px 30px rgba(241,196,15,0.3);">
-        Tiếp Tục Hành Trình &rarr;
+                Tiếp Tục Hành Trình &rarr;
       </a>
       <p style="margin:25px 0 0;color:#566573;font-size:14px;">Tặng bạn mã <strong>WRAPPED${year}</strong> giảm 10% cho đơn hàng tiếp theo!</p>
     </td></tr>

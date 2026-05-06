@@ -1,0 +1,4 @@
+isbn,title,author,category,thumbnail,description,published_year,num_pages,price,inHouseQuantity,binLocation,moods
+9786043331111,Nỗi Buồn Chiến Tranh,Bảo Ninh,Văn học hiện đại,https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=200,Một kiệt tác về chiến tranh Việt Nam.,1991,300,150000,20,Khu-A1,french_sadness;bitter_reality
+9786043332222,Thân Phận Của Tình Yêu,Bảo Ninh,Văn học hiện đại,https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=200,Tên gốc của Nỗi Buồn Chiến Tranh.,1987,280,140000,15,Khu-A1,french_sadness
+9786043333333,Hà Nội Băm Sáu Phố Phường,Thạch Lam,Tùy bút,https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200,Vẻ đẹp cổ kính của Hà Nội.,1943,120,75000,40,Khu-B2,hanoi_polite

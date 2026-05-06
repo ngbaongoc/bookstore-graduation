@@ -124,7 +124,9 @@
     "clearFilters": "Clear all filters",
     "loadingError": "Failed to load books. Please try again later.",
     "excludeBanner": "Showing <strong>{{category}}</strong> books you haven't read yet — just for you.",
-    "moodQuestion": "How are you feeling today?"
+    "moodQuestion": "How are you feeling today?",
+    "outOfStock": "Out of stock",
+    "onlyLeft": "Only {{count}} left"
   },
   "single": {
     "author": "Author",

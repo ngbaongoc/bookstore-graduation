@@ -52,6 +52,22 @@ const bookSchema = new mongoose.Schema({
   average_review_score: {
     type: Number,
     default: 0,
+  },
+  moodPlaylistUrl: {
+    type: String, // Spotify or YouTube link
+    default: ""
+  },
+  cinemaLink: {
+    type: String, // Link to movie or trailer
+    default: ""
+  },
+  cinemaComparison: {
+    type: String, // A short note comparing book and movie
+    default: ""
+  },
+  featuredQuote: {
+    type: String, // A core quote for "Quote Art" feature
+    default: ""
   }
 }, {
   timestamps: true,

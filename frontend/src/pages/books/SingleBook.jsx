@@ -4,9 +4,9 @@ import Swal from 'sweetalert2'
 import { useDeleteBookMutation, useFetchBookByIdQuery } from '../../redux/features/books/booksApi'
 import { usePostReviewMutation, useGetReviewsByBookIdQuery } from '../../redux/features/reviews/reviewsApi'
 import { getImgUrl } from '../../utils/getImgUrl'
-import { FiShoppingCart } from "react-icons/fi"
+import { FiShoppingCart, FiMusic, FiFilm, FiEdit3 } from "react-icons/fi"
 import { HiEllipsisVertical } from "react-icons/hi2"
-import { FaStar, FaRegStar } from "react-icons/fa"
+import { FaStar, FaRegStar, FaQuoteLeft } from "react-icons/fa"
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/features/cart/cartSlice';
 import { useAuth } from '../../context/AuthContext';
@@ -166,21 +166,68 @@ const SingleBook = () => {
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(book?.price || book?.newPrice)}
                         </p>
                     </div>
-                    <button
-                        onClick={() => handleAddToCart(book)}
-                        className="mt-8 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-md flex items-center justify-center gap-2 transition-colors w-max">
-                        <FiShoppingCart />
-                        <span>{t("single.addToCart")}</span>
-                    </button>
+                    <div className="mt-8 flex flex-wrap gap-3">
+                        <button
+                            onClick={() => handleAddToCart(book)}
+                            className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-md flex items-center justify-center gap-2 transition-colors">
+                            <FiShoppingCart />
+                            <span>{t("single.addToCart")}</span>
+                        </button>
+
+                        {book?.cinemaLink && (
+                            <a 
+                                href={book.cinemaLink} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 font-semibold py-3 px-6 rounded-md flex items-center justify-center gap-2 transition-colors"
+                            >
+                                <FiFilm />
+                                <span>Cinematic</span>
+                            </a>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {/* Book Description */}
-            <div className="mt-12 border-t pt-8">
-                <h2 className="text-2xl font-bold mb-4">{t("single.description")}</h2>
-                <p className="text-gray-700 leading-relaxed">
-                    {book?.description || t("single.noDescription")}
-                </p>
+            {/* Featured Quote Art Section */}
+            {book?.featuredQuote && (
+                <div className="mt-12 bg-gray-50 p-8 rounded-2xl border-l-4 border-black relative overflow-hidden group">
+                    <FaQuoteLeft className="absolute -top-4 -left-2 text-8xl text-gray-100 z-0" />
+                    <div className="relative z-10">
+                        <p className="text-xl italic font-serif leading-relaxed text-gray-800 mb-4">
+                            "{book.featuredQuote}"
+                        </p>
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">— {book.author}</p>
+                            <button 
+                                onClick={() => Swal.fire('Coming Soon', 'Tính năng xuất ảnh nghệ thuật đang được phát triển!', 'info')}
+                                className="text-xs text-gray-400 flex items-center gap-1 hover:text-black transition-colors"
+                            >
+                                <FiEdit3 /> Chia sẻ ảnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="mt-12 border-t pt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                    <h2 className="text-2xl font-bold mb-4">Mô tả</h2>
+                    <p className="text-gray-700 leading-relaxed">
+                        {book?.description || t("single.noDescription")}
+                    </p>
+                </div>
+                
+                {book?.cinemaComparison && (
+                    <div className="bg-blue-50/50 p-6 rounded-xl border border-blue-100 h-fit">
+                        <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                            <FiFilm className="text-blue-500" /> Góc nhìn điện ảnh
+                        </h3>
+                        <p className="text-sm text-blue-800 leading-relaxed italic">
+                            "{book.cinemaComparison}"
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Customer Reviews */}

@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { MdInventory, MdOutlineShoppingCart, MdLibraryBooks, MdAddCircleOutline, MdFileUpload } from 'react-icons/md'
-import { useFetchAllBooksQuery, useImportBooksMutation } from '../../redux/features/books/booksApi'
+import { MdInventory, MdOutlineShoppingCart, MdLibraryBooks, MdAddCircleOutline, MdFileUpload, MdDelete } from 'react-icons/md'
+import { useFetchAllBooksQuery, useImportBooksMutation, useDeleteBookMutation } from '../../redux/features/books/booksApi'
 import { useAdjustStockMutation, useAdjustBinLocationMutation } from '../../redux/features/inventory/inventoryApi'
 import Papa from 'papaparse'
 
@@ -11,6 +11,7 @@ const Inventory = () => {
     const [adjustStock] = useAdjustStockMutation()
     const [adjustBinLocation] = useAdjustBinLocationMutation()
     const [importBooks] = useImportBooksMutation()
+    const [deleteBook] = useDeleteBookMutation()
 
     const [adjustModalOpen, setAdjustModalOpen] = useState(false)
     const [adjustBinModalOpen, setAdjustBinModalOpen] = useState(false)
@@ -147,6 +148,39 @@ const Inventory = () => {
         }
     }
 
+    const handleDeleteBook = async (book) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to delete "${book.title}". This action cannot be undone!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await deleteBook(book._id).unwrap();
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'The book has been removed from the catalog.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                refetchBooks();
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: error?.data?.message || 'Failed to delete the book.',
+                    icon: 'error'
+                });
+            }
+        }
+    }
+
     const lowStockBooks = books.filter(b => (b.inventory?.inHouseQuantity || 0) < 10)
 
     const getStockBadge = (qty) => {
@@ -253,6 +287,7 @@ const Inventory = () => {
                             <th className="pb-4 px-2 font-semibold">Bin Location</th>
                             <th className="pb-4 px-2 font-semibold text-center">In-House Qty</th>
                             <th className="pb-4 px-2 font-semibold text-center">Reserved</th>
+                            <th className="pb-4 px-2 font-semibold text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -291,6 +326,16 @@ const Inventory = () => {
                                     </div>
                                 </td>
                                 <td className="py-4 px-2 text-center text-gray-600 font-medium">{book.inventory?.reservedQuantity || 0}</td>
+                                <td className="py-4 px-2 text-center align-top">
+                                    <button 
+                                        onClick={() => handleDeleteBook(book)} 
+                                        className="text-red-600 hover:text-white font-bold text-xs flex items-center justify-center gap-1 bg-red-50 border border-red-200 hover:bg-red-600 hover:border-red-600 px-3 py-1.5 rounded-lg transition-all shadow-sm w-max mx-auto whitespace-nowrap active:scale-95"
+                                        title={`Remove ${book.title} from inventory`}
+                                    >
+                                        <MdDelete className="text-sm" /> 
+                                        Remove
+                                    </button>
+                                </td>
                             </tr>
                             )
                         })}
